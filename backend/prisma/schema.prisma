@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  MERCHANT
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+}
+
+enum PetType {
+  DOG
+  CAT
+  OTHER
+}
+
+enum ProductStatus {
+  PENDING
+  LISTED
+  UNLISTED
+  REJECTED
+}
+
+enum ProductCategory {
+  PET_FOOD
+  SUPPLIES
+  PET_LIVE
+  SECONDHAND
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  RECEIVED
+  CANCELLED
+  REFUNDING
+  REFUNDED
+}
+
+enum ServiceType {
+  GROOMING
+  VET
+  BOARDING
+  TRAINING
+}
+
+enum ServiceStatus {
+  PENDING
+  OPEN
+  CLOSED
+}
+
+model User {
+  id           BigInt     @id @default(autoincrement()) @map("id")
+  uuid         String     @unique @default(cuid())
+  phone        String?    @unique
+  email        String?    @unique
+  passwordHash String?    @map("password_hash")
+  nickname     String
+  avatar       String?
+  bio          String?     @db.VarChar(200)
+  gender       Int        @default(0)
+  city         String?
+  province     String?
+  role         UserRole   @default(USER)
+  status       UserStatus @default(ACTIVE)
+  isVerified   Boolean    @default(false) @map("is_verified")
+  followCount  Int        @default(0) @map("follow_count")
+  fanCount     Int        @default(0) @map("fan_count")
+  feedCount    Int        @default(0) @map("feed_count")
+  lastLoginAt  DateTime?  @map("last_login_at")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  pets         Pet[]
+  follows      Follow[]   @relation("following")
+  followers    Follow[]   @relation("follower")
+  feeds        Feed[]
+  products     Product[]
+  orders       Order[]    @relation("buyer")
+  sales        Order[]    @relation("seller")
+
+  @@map("users")
+}
+
+model Pet {
+  id              BigInt   @id @default(autoincrement()) @map("id")
+  uuid            String   @unique @default(cuid())
+  userId          BigInt   @map("user_id")
+  name            String   @db.VarChar(50)
+  type            PetType
+  breed           String?  @db.VarChar(50)
+  gender          Int      @default(0)
+  birthDate       DateTime? @map("birth_date")
+  weight          Decimal? @db.Decimal(5, 2)
+  isNeutered      Boolean  @default(false) @map("is_neutered")
+  vaccineStatus   String   @default("none") @map("vaccine_status") @db.VarChar(20)
+  avatar          String?
+  color           String?  @db.VarChar(50)
+  personalityTags String[] @map("personality_tags")
+  bio             String?  @db.VarChar(500)
+  isPublic        Boolean  @default(true) @map("is_public")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type, breed])
+  @@map("pets")
+}
+
+model Follow {
+  id         BigInt   @id @default(autoincrement()) @map("id")
+  followerId BigInt   @map("follower_id")
+  followeeId BigInt   @map("followee_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  follower User @relation("follower", fields: [followerId], references: [id])
+  followee User @relation("following", fields: [followeeId], references: [id])
+
+  @@unique([followerId, followeeId])
+  @@index([followerId])
+  @@index([followeeId])
+  @@map("follows")
+}
+
+model Product {
+  id            BigInt           @id @default(autoincrement()) @map("id")
+  uuid          String           @unique @default(cuid())
+  sellerId      BigInt           @map("seller_id")
+  title         String           @db.VarChar(200)
+  category      ProductCategory
+  price         Int
+  originalPrice Int?             @map("original_price")
+  stock         Int              @default(0)
+  images        String[]
+  videoUrl      String?          @map("video_url")
+  description   String?          @db.Text
+  specs         Json?
+  condition     String?          @db.VarChar(20)
+  petType       String?          @map("pet_type") @db.VarChar(20)
+  petBreed      String?          @map("pet_breed") @db.VarChar(50)
+  status        ProductStatus    @default(PENDING)
+  salesCount    Int              @default(0) @map("sales_count")
+  ratingSum     Int              @default(0) @map("rating_sum")
+  reviewCount   Int              @default(0) @map("review_count")
+  city          String?          @db.VarChar(50)
+  province      String?          @db.VarChar(50)
+  lat           Decimal?         @db.Decimal(10, 7)
+  lng           Decimal?         @db.Decimal(10, 7)
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  seller User @relation(fields: [sellerId], references: [id])
+  orders Order[]
+
+  @@index([sellerId])
+  @@index([category])
+  @@index([status])
+  @@index([city])
+  @@map("products")
+}
+
+model Order {
+  id            BigInt      @id @default(autoincrement()) @map("id")
+  orderNo       String      @unique @map("order_no") @db.VarChar(32)
+  productId     BigInt      @map("product_id")
+  buyerId       BigInt      @map("buyer_id")
+  sellerId      BigInt      @map("seller_id")
+  quantity      Int         @default(1)
+  totalFee      Int         @map("total_fee")
+  status        OrderStatus @default(PENDING)
+  paymentMethod String?     @map("payment_method") @db.VarChar(20)
+  paymentNo     String?     @map("payment_no") @db.VarChar(100)
+  paidAt        DateTime?   @map("paid_at")
+  shippedAt     DateTime?   @map("shipped_at")
+  receivedAt    DateTime?   @map("received_at")
+  cancelReason  String?     @map("cancel_reason") @db.VarChar(500)
+  refundReason  String?     @map("refund_reason") @db.VarChar(500)
+  receiverName  String?     @map("receiver_name") @db.VarChar(50)
+  receiverPhone String?     @map("receiver_phone") @db.VarChar(20)
+  receiverAddr  String?     @map("receiver_addr") @db.VarChar(500)
+  buyerNote     String?     @map("buyer_note") @db.VarChar(500)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  product Product @relation(fields: [productId], references: [id])
+  buyer   User    @relation("buyer", fields: [buyerId], references: [id])
+  seller  User    @relation("seller", fields: [sellerId], references: [id])
+
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+  @@map("orders")
+}
+
+model Service {
+  id            BigInt        @id @default(autoincrement()) @map("id")
+  uuid          String        @unique @default(cuid())
+  providerId    BigInt        @map("provider_id")
+  shopName      String        @map("shop_name") @db.VarChar(100)
+  shopAvatar    String?       @map("shop_avatar")
+  shopPhone     String?       @map("shop_phone") @db.VarChar(20)
+  type          ServiceType
+  city          String?       @db.VarChar(50)
+  address       String?       @db.VarChar(500)
+  lat           Decimal?      @db.Decimal(10, 7)
+  lng           Decimal?      @db.Decimal(10, 7)
+  businessHours Json?         @map("business_hours")
+  description   String?       @db.Text
+  images        String[]
+  status        ServiceStatus @default(PENDING)
+  ratingAvg     Decimal       @default(0.0) @map("rating_avg") @db.Decimal(2, 1)
+  reviewCount   Int           @default(0) @map("review_count")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  @@index([type])
+  @@index([city])
+  @@map("services")
+}

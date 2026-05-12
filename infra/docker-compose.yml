@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pethub-postgres
+    environment:
+      POSTGRES_DB: pethub
+      POSTGRES_USER: pethub
+      POSTGRES_PASSWORD: pethub123
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U pethub']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: pethub-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:7
+    container_name: pethub-mongo
+    environment:
+      MONGO_INITDB_DATABASE: pethub
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodata:/data/db
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: pethub-backend
+    ports:
+      - '8080:8080'
+    environment:
+      DATABASE_URL: postgresql://pethub:pethub123@postgres:5432/pethub
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: pethub-jwt-secret-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redisdata:
+  mongodata:
