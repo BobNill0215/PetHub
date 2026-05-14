@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/auth';
 export function LoginForm() {
   const router = useRouter();
   const { login, loading } = useAuthStore();
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -17,7 +17,7 @@ export function LoginForm() {
     e.preventDefault();
     setError('');
     try {
-      await login(phone, password);
+      await login(email, password);
       router.push('/');
     } catch (err: any) {
       setError(err.response?.data?.message || '登录失败');
@@ -27,11 +27,12 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        id="phone"
-        label="手机号"
-        placeholder="请输入手机号"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+        id="email"
+        label="邮箱"
+        type="email"
+        placeholder="请输入邮箱"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         required
       />
       <Input

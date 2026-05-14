@@ -62,34 +62,34 @@ enum ServiceStatus {
 }
 
 model User {
-  id           BigInt     @id @default(autoincrement()) @map("id")
-  uuid         String     @unique @default(cuid())
-  phone        String?    @unique
-  email        String?    @unique
-  passwordHash String?    @map("password_hash")
-  nickname     String
-  avatar       String?
-  bio          String?     @db.VarChar(200)
-  gender       Int        @default(0)
-  city         String?
-  province     String?
-  role         UserRole   @default(USER)
-  status       UserStatus @default(ACTIVE)
-  isVerified   Boolean    @default(false) @map("is_verified")
-  followCount  Int        @default(0) @map("follow_count")
-  fanCount     Int        @default(0) @map("fan_count")
-  feedCount    Int        @default(0) @map("feed_count")
-  lastLoginAt  DateTime?  @map("last_login_at")
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
+  id                   BigInt     @id @default(autoincrement()) @map("id")
+  uuid                 String     @unique @default(cuid())
+  email                String     @unique
+  passwordHash         String    @map("password_hash")
+  nickname             String
+  avatar               String?
+  bio                  String?     @db.VarChar(200)
+  gender               Int        @default(0)
+  city                 String?
+  province             String?
+  role                 UserRole   @default(USER)
+  status               UserStatus @default(ACTIVE)
+  emailVerifiedAt      DateTime?  @map("email_verified_at")
+  verificationToken    String?    @unique @map("verification_token")
+  verificationSentAt   DateTime?  @map("verification_sent_at")
+  followCount          Int        @default(0) @map("follow_count")
+  fanCount             Int        @default(0) @map("fan_count")
+  feedCount            Int        @default(0) @map("feed_count")
+  lastLoginAt          DateTime?  @map("last_login_at")
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
 
-  pets         Pet[]
-  follows      Follow[]   @relation("following")
-  followers    Follow[]   @relation("follower")
-  // feeds stored in MongoDB
-  products     Product[]
-  orders       Order[]    @relation("buyer")
-  sales        Order[]    @relation("seller")
+  pets                 Pet[]
+  follows              Follow[]   @relation("following")
+  followers            Follow[]   @relation("follower")
+  products             Product[]
+  orders               Order[]    @relation("buyer")
+  sales                Order[]    @relation("seller")
 
   @@map("users")
 }
