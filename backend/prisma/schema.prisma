@@ -88,6 +88,8 @@ model User {
   products             Product[]
   orders               Order[]    @relation("buyer")
   sales                Order[]    @relation("seller")
+  feedLikes            FeedLike[]
+  feedComments         FeedComment[]
 
   @@map("users")
 }
@@ -135,11 +137,43 @@ model Feed {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user     User          @relation(fields: [userId], references: [id])
+  likes    FeedLike[]
+  comments FeedComment[]
 
   @@index([userId])
   @@index([createdAt])
   @@map("feeds")
+}
+
+model FeedLike {
+  id        BigInt   @id @default(autoincrement()) @map("id")
+  feedId    BigInt   @map("feed_id")
+  userId    BigInt   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  feed Feed @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([feedId, userId])
+  @@map("feed_likes")
+}
+
+model FeedComment {
+  id        BigInt   @id @default(autoincrement()) @map("id")
+  feedId    BigInt   @map("feed_id")
+  userId    BigInt   @map("user_id")
+  content   String   @db.VarChar(500)
+  parentId  BigInt?  @map("parent_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  feed   Feed          @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id])
+  parent FeedComment?  @relation("CommentReply", fields: [parentId], references: [id])
+  replies FeedComment[] @relation("CommentReply")
+
+  @@index([feedId])
+  @@map("feed_comments")
 }
 
 model Follow {

@@ -37,10 +37,10 @@ export function Navbar() {
               <Link href="/pets" className="text-sm text-gray-600 hover:text-gray-900">
                 我的宠物
               </Link>
-              <div className="flex items-center gap-2">
+              <Link href="/profile" className="flex items-center gap-2">
                 <Avatar src={user.avatar} name={user.nickname} size="sm" />
                 <span className="text-sm font-medium text-gray-700">{user.nickname}</span>
-              </div>
+              </Link>
               <Button variant="ghost" size="sm" onClick={logout}>
                 退出
               </Button>

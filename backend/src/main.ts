@@ -2,10 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import { config } from './config';
 import { errorHandler, notFoundHandler } from './middleware/error';
-import { authRequired } from './middleware/auth';
+import { authRequired, optionalAuth } from './middleware/auth';
 import { handleRegister, handleLogin, handleGetProfile } from './handler/auth';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
 import { handleCreateFeed, handleGetFeeds, handleDeleteFeed } from './handler/feed';
+import { handleGetUserById, handleGetUserFeeds } from './handler/user';
+import { handleLikeFeed, handleUnlikeFeed, handleGetComments, handleCreateComment } from './handler/social';
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
@@ -21,18 +23,33 @@ app.get('/api/v1/health', (_req, res) => {
   res.json({ code: 0, message: 'ok', data: { service: 'pethub', version: '0.1.0' } });
 });
 
+// Auth
 app.post('/api/v1/auth/register', handleRegister);
 app.post('/api/v1/auth/login', handleLogin);
 app.get('/api/v1/users/me', authRequired, handleGetProfile);
 
+// Users
+app.get('/api/v1/users/:id', handleGetUserById);
+app.get('/api/v1/users/:id/feeds', handleGetUserFeeds);
+
+// Pets
 app.post('/api/v1/pets', authRequired, handleCreatePet);
 app.get('/api/v1/pets', authRequired, handleGetUserPets);
 app.put('/api/v1/pets/:id', authRequired, handleUpdatePet);
 app.delete('/api/v1/pets/:id', authRequired, handleDeletePet);
 
+// Feeds
 app.post('/api/v1/feeds', authRequired, handleCreateFeed);
-app.get('/api/v1/feeds', handleGetFeeds);
+app.get('/api/v1/feeds', optionalAuth, handleGetFeeds);
 app.delete('/api/v1/feeds/:id', authRequired, handleDeleteFeed);
+
+// Likes
+app.post('/api/v1/feeds/:id/like', authRequired, handleLikeFeed);
+app.delete('/api/v1/feeds/:id/like', authRequired, handleUnlikeFeed);
+
+// Comments
+app.get('/api/v1/feeds/:id/comments', handleGetComments);
+app.post('/api/v1/feeds/:id/comments', authRequired, handleCreateComment);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

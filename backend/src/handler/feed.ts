@@ -42,6 +42,7 @@ export async function handleGetFeeds(req: Request, res: Response) {
   try {
     const page = Math.max(1, parseInt(String(req.query.page)) || 1);
     const pageSize = Math.min(20, Math.max(1, parseInt(String(req.query.pageSize)) || 10));
+    const currentUserId = req.user?.userId;
 
     const [feeds, total] = await Promise.all([
       prisma.feed.findMany({
@@ -57,7 +58,21 @@ export async function handleGetFeeds(req: Request, res: Response) {
       prisma.feed.count(),
     ]);
 
-    return success(res, { data: feeds, total, page, page_size: pageSize });
+    let likedFeedIds: number[] = [];
+    if (currentUserId) {
+      const likes = await prisma.feedLike.findMany({
+        where: { userId: currentUserId, feedId: { in: feeds.map(f => f.id) } },
+        select: { feedId: true },
+      });
+      likedFeedIds = likes.map(l => Number(l.feedId));
+    }
+
+    const data = feeds.map(f => ({
+      ...f,
+      isLiked: likedFeedIds.includes(Number(f.id)),
+    }));
+
+    return success(res, { data, total, page, page_size: pageSize });
   } catch {
     return fail(res, '获取动态失败');
   }
