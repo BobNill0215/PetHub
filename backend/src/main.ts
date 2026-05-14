@@ -8,6 +8,7 @@ import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } 
 import { handleCreateFeed, handleGetFeeds, handleDeleteFeed } from './handler/feed';
 import { handleGetUserById, handleGetUserFeeds } from './handler/user';
 import { handleLikeFeed, handleUnlikeFeed, handleGetComments, handleCreateComment } from './handler/social';
+import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
@@ -50,6 +51,12 @@ app.delete('/api/v1/feeds/:id/like', authRequired, handleUnlikeFeed);
 // Comments
 app.get('/api/v1/feeds/:id/comments', handleGetComments);
 app.post('/api/v1/feeds/:id/comments', authRequired, handleCreateComment);
+
+// Products
+app.post('/api/v1/products', authRequired, handleCreateProduct);
+app.get('/api/v1/products', handleGetProducts);
+app.get('/api/v1/products/mine', authRequired, handleGetMyProducts);
+app.get('/api/v1/products/:id', handleGetProductById);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
