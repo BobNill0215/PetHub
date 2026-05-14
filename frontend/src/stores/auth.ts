@@ -34,6 +34,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const res = await apiPost<{ token: string; user: User }>('/auth/login', { phone, password });
       localStorage.setItem('token', res.data.token);
       set({ token: res.data.token, user: res.data.user });
+    } catch (err) {
+      throw err;
     } finally {
       set({ loading: false });
     }
@@ -45,6 +47,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const res = await apiPost<{ token: string; user: User }>('/auth/register', { phone, password, nickname });
       localStorage.setItem('token', res.data.token);
       set({ token: res.data.token, user: res.data.user });
+    } catch (err) {
+      throw err;
     } finally {
       set({ loading: false });
     }
