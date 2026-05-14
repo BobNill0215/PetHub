@@ -1,8 +1,12 @@
 import axios, { AxiosError } from 'axios';
 import type { ApiResponse } from '@/types';
 
+const BACKEND_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? 'http://localhost:8080/api/v1'
+  : 'https://backend-production-f4e63.up.railway.app/api/v1';
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1',
+  baseURL: BACKEND_URL,
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
