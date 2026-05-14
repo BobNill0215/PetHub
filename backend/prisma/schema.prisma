@@ -64,8 +64,8 @@ enum ServiceStatus {
 model User {
   id                   BigInt     @id @default(autoincrement()) @map("id")
   uuid                 String     @unique @default(cuid())
-  email                String     @unique
-  passwordHash         String    @map("password_hash")
+  email                String?    @unique
+  passwordHash         String?   @map("password_hash")
   nickname             String
   avatar               String?
   bio                  String?     @db.VarChar(200)
