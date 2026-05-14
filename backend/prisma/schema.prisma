@@ -85,6 +85,7 @@ model User {
   updatedAt            DateTime   @updatedAt @map("updated_at")
 
   pets                 Pet[]
+  feeds                Feed[]
   follows              Follow[]   @relation("following")
   followers            Follow[]   @relation("follower")
   products             Product[]
@@ -119,6 +120,27 @@ model Pet {
   @@index([userId])
   @@index([type, breed])
   @@map("pets")
+}
+
+model Feed {
+  id           BigInt    @id @default(autoincrement()) @map("id")
+  uuid         String    @unique @default(cuid())
+  userId       BigInt    @map("user_id")
+  content      String    @db.VarChar(2000)
+  images       String[]
+  videoUrl     String?   @map("video_url")
+  topics       String[]
+  petIds       BigInt[]  @map("pet_ids")
+  likeCount    Int       @default(0) @map("like_count")
+  commentCount Int       @default(0) @map("comment_count")
+  bookmarkCount Int      @default(0) @map("bookmark_count")
+  status       Int       @default(1)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("feeds")
 }
 
 model Follow {

@@ -16,14 +16,6 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
-const emailSchema = z.object({
-  email: z.string().email('邮箱格式不正确'),
-});
-
-const tokenSchema = z.object({
-  token: z.string().min(1, '缺少验证令牌'),
-});
-
 export async function handleRegister(req: Request, res: Response) {
   try {
     const body = registerSchema.parse(req.body);
@@ -45,30 +37,6 @@ export async function handleLogin(req: Request, res: Response) {
     if (err instanceof z.ZodError) return fail(res, err.errors[0].message);
     if (err instanceof Error) return fail(res, err.message);
     return fail(res, '登录失败');
-  }
-}
-
-export async function handleVerifyEmail(req: Request, res: Response) {
-  try {
-    const body = tokenSchema.parse(req.body);
-    const result = await authService.verifyEmail(body.token);
-    return success(res, result);
-  } catch (err) {
-    if (err instanceof z.ZodError) return fail(res, err.errors[0].message);
-    if (err instanceof Error) return fail(res, err.message);
-    return fail(res, '验证失败');
-  }
-}
-
-export async function handleResendVerification(req: Request, res: Response) {
-  try {
-    const body = emailSchema.parse(req.body);
-    const result = await authService.resendVerification(body.email);
-    return success(res, result);
-  } catch (err) {
-    if (err instanceof z.ZodError) return fail(res, err.errors[0].message);
-    if (err instanceof Error) return fail(res, err.message);
-    return fail(res, '发送失败');
   }
 }
 

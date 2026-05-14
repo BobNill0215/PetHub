@@ -9,9 +9,7 @@ interface AuthState {
   token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, nickname: string) => Promise<unknown>;
-  verifyEmail: (token: string) => Promise<void>;
-  resendVerification: (email: string) => Promise<void>;
+  register: (email: string, password: string, nickname: string) => Promise<void>;
   logout: () => void;
   fetchProfile: () => Promise<void>;
   init: () => void;
@@ -46,32 +44,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (email, password, nickname) => {
     set({ loading: true });
     try {
-      const res = await apiPost<{ message: string }>('/auth/register', { email, password, nickname });
-      return res;
-    } catch (err) {
-      throw err;
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  verifyEmail: async (token) => {
-    set({ loading: true });
-    try {
-      const res = await apiPost<{ token: string; user: User }>('/auth/verify', { token });
+      const res = await apiPost<{ token: string; user: User }>('/auth/register', { email, password, nickname });
       localStorage.setItem('token', res.data.token);
       set({ token: res.data.token, user: res.data.user });
-    } catch (err) {
-      throw err;
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  resendVerification: async (email) => {
-    set({ loading: true });
-    try {
-      await apiPost('/auth/resend-verification', { email });
     } catch (err) {
       throw err;
     } finally {

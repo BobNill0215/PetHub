@@ -31,6 +31,9 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {user ? (
             <div className="flex items-center gap-3">
+              <Link href="/feed/new" className="text-sm text-gray-600 hover:text-gray-900">
+                发布
+              </Link>
               <Link href="/pets" className="text-sm text-gray-600 hover:text-gray-900">
                 我的宠物
               </Link>

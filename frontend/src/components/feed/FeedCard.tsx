@@ -4,19 +4,21 @@ import { Heart, MessageCircle, Bookmark } from 'lucide-react';
 import { Avatar } from '@/components/common/Avatar';
 import { timeAgo } from '@/lib/utils';
 
-interface FeedCardProps {
-  feed: {
-    id: number;
-    user: { nickname: string; avatar?: string; city?: string };
-    content: string;
-    images: string[];
-    likeCount: number;
-    commentCount: number;
-    createdAt: string;
-  };
+interface FeedItem {
+  id: number;
+  uuid: string;
+  user: { id: number; nickname: string; avatar?: string; city?: string };
+  content: string;
+  images: string[];
+  videoUrl?: string;
+  topics: string[];
+  likeCount: number;
+  commentCount: number;
+  bookmarkCount: number;
+  createdAt: string;
 }
 
-export function FeedCard({ feed }: FeedCardProps) {
+export function FeedCard({ feed }: { feed: FeedItem }) {
   return (
     <div className="rounded-xl border bg-white shadow-sm">
       <div className="flex items-center gap-3 p-4">
@@ -33,14 +35,23 @@ export function FeedCard({ feed }: FeedCardProps) {
         <div className="aspect-[3/2] overflow-hidden bg-gray-100">
           <img
             src={feed.images[0]}
-            alt="feed image"
+            alt=""
             className="h-full w-full object-cover"
           />
         </div>
       )}
 
       <div className="p-4">
-        <p className="text-sm text-gray-800">{feed.content}</p>
+        <p className="text-sm text-gray-800 whitespace-pre-wrap">{feed.content}</p>
+
+        {feed.topics.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {feed.topics.map(t => (
+              <span key={t} className="text-xs text-blue-500">#{t}</span>
+            ))}
+          </div>
+        )}
+
         <div className="mt-4 flex items-center gap-6">
           <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-500">
             <Heart className="h-4 w-4" />

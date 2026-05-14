@@ -11,7 +11,6 @@ export function RegisterForm() {
   const { register, loading } = useAuthStore();
   const [form, setForm] = useState({ email: '', password: '', confirmPassword: '', nickname: '' });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,31 +23,11 @@ export function RegisterForm() {
 
     try {
       await register(form.email, form.password, form.nickname);
-      setSuccess(true);
+      router.push('/');
     } catch (err: any) {
       setError(err.response?.data?.message || '注册失败');
     }
   };
-
-  if (success) {
-    return (
-      <div className="text-center py-8">
-        <div className="text-4xl mb-4">📧</div>
-        <h2 className="text-lg font-semibold text-gray-900">注册成功！</h2>
-        <p className="mt-2 text-sm text-gray-500">
-          验证邮件已发送至 <span className="font-medium text-gray-700">{form.email}</span>
-        </p>
-        <p className="mt-1 text-sm text-gray-400">请查收邮件并点击验证链接完成注册</p>
-        <Button
-          variant="secondary"
-          className="mt-6"
-          onClick={() => router.push('/login')}
-        >
-          去登录
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
