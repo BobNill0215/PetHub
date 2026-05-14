@@ -138,6 +138,8 @@ model Feed {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
+  user User @relation(fields: [userId], references: [id])
+
   @@index([userId])
   @@index([createdAt])
   @@map("feeds")

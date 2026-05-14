@@ -12,9 +12,6 @@
     "db:seed": "tsx src/seed.ts",
     "lint": "eslint src --ext .ts"
   },
-  "prisma": {
-    "schema": "prisma/schema.prisma"
-  },
   "dependencies": {
     "@prisma/client": "^6.0.0",
     "bcryptjs": "^2.4.3",
