@@ -5,7 +5,7 @@ COPY package*.json ./
 COPY prisma ./prisma
 RUN npm install
 COPY . .
-RUN npx prisma generate && npm run build
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate && npm run build
 
 FROM node:22-alpine AS runner
 RUN apk add --no-cache openssl
