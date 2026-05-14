@@ -6,6 +6,11 @@ import { authRequired } from './middleware/auth';
 import { handleRegister, handleLogin, handleGetProfile } from './handler/auth';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
 
+// Fix BigInt JSON serialization (Prisma uses BigInt for auto-increment IDs)
+(BigInt.prototype as any).toJSON = function () {
+  return Number(this);
+};
+
 const app = express();
 
 app.use(cors());
