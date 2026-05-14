@@ -25,7 +25,8 @@ export function RegisterForm() {
       await register(form.email, form.password, form.nickname);
       router.push('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || '注册失败');
+      const msg = err.response?.data?.message || err.message || '注册失败';
+      setError(msg);
     }
   };
 

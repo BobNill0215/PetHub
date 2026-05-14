@@ -20,7 +20,8 @@ export function LoginForm() {
       await login(email, password);
       router.push('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || '登录失败');
+      const msg = err.response?.data?.message || err.message || '登录失败';
+      setError(msg);
     }
   };
 
