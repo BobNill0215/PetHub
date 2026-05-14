@@ -15,4 +15,4 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/prisma ./prisma
 EXPOSE 8080
-CMD ["node", "dist/main.js"]
+CMD if [ -z "$DATABASE_URL" ]; then export DATABASE_URL="postgresql://${PGUSER:-pethub}:${PGPASSWORD:-pethub123}@${PGHOST:-localhost}:${PGPORT:-5432}/${PGDATABASE:-pethub}?schema=public"; fi && npx prisma db push --accept-data-loss && node dist/main.js
