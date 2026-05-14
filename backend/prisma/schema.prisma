@@ -74,9 +74,6 @@ model User {
   province             String?
   role                 UserRole   @default(USER)
   status               UserStatus @default(ACTIVE)
-  emailVerifiedAt      DateTime?  @map("email_verified_at")
-  verificationToken    String?    @unique @map("verification_token")
-  verificationSentAt   DateTime?  @map("verification_sent_at")
   followCount          Int        @default(0) @map("follow_count")
   fanCount             Int        @default(0) @map("fan_count")
   feedCount            Int        @default(0) @map("feed_count")
