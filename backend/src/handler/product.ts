@@ -19,7 +19,12 @@ export async function handleCreateProduct(req: Request, res: Response) {
   try {
     const body = createProductSchema.parse(req.body);
     const product = await prisma.product.create({
-      data: { ...body, sellerId: req.user!.userId, images: body.images || [] },
+      data: {
+        ...body,
+        sellerId: req.user!.userId,
+        images: body.images || [],
+        status: 'LISTED',
+      },
     });
     return success(res, product, 201);
   } catch (err) {
