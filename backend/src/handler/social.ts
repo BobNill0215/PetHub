@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { success, fail } from '../pkg/response';
+import { createNotification } from '../lib/notify';
 
 export async function handleLikeFeed(req: Request, res: Response) {
   try {
@@ -15,6 +16,18 @@ export async function handleLikeFeed(req: Request, res: Response) {
 
     await prisma.feedLike.create({ data: { feedId, userId } });
     await prisma.feed.update({ where: { id: feedId }, data: { likeCount: { increment: 1 } } });
+
+    const feed = await prisma.feed.findUnique({ where: { id: feedId } });
+    if (feed) {
+      await createNotification({
+        userId: Number(feed.userId),
+        type: 'like',
+        actorId: userId,
+        targetType: 'feed',
+        targetId: feedId,
+        content: '赞了你的动态',
+      });
+    }
 
     return success(res, null);
   } catch {
@@ -80,6 +93,18 @@ export async function handleCreateComment(req: Request, res: Response) {
     });
 
     await prisma.feed.update({ where: { id: feedId }, data: { commentCount: { increment: 1 } } });
+
+    const feed = await prisma.feed.findUnique({ where: { id: feedId } });
+    if (feed) {
+      await createNotification({
+        userId: Number(feed.userId),
+        type: 'comment',
+        actorId: req.user!.userId,
+        targetType: 'feed',
+        targetId: feedId,
+        content: '评论了你的动态',
+      });
+    }
 
     return success(res, comment, 201);
   } catch (err) {

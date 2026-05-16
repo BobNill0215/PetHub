@@ -6,9 +6,11 @@ import { authRequired, optionalAuth } from './middleware/auth';
 import { handleRegister, handleLogin, handleGetProfile } from './handler/auth';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
 import { handleCreateFeed, handleGetFeeds, handleDeleteFeed } from './handler/feed';
-import { handleGetUserById, handleGetUserFeeds } from './handler/user';
+import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './handler/user';
 import { handleLikeFeed, handleUnlikeFeed, handleGetComments, handleCreateComment } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
+import { handleSearch } from './handler/search';
+import { handleGetNotifications, handleMarkRead, handleMarkAllRead } from './handler/notify';
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
@@ -31,6 +33,7 @@ app.get('/api/v1/users/me', authRequired, handleGetProfile);
 
 // Users
 app.get('/api/v1/users/:id', handleGetUserById);
+app.put('/api/v1/users/me/profile', authRequired, handleUpdateProfile);
 app.get('/api/v1/users/:id/feeds', handleGetUserFeeds);
 
 // Pets
@@ -51,6 +54,14 @@ app.delete('/api/v1/feeds/:id/like', authRequired, handleUnlikeFeed);
 // Comments
 app.get('/api/v1/feeds/:id/comments', handleGetComments);
 app.post('/api/v1/feeds/:id/comments', authRequired, handleCreateComment);
+
+// Search
+app.get('/api/v1/search', handleSearch);
+
+// Notifications
+app.get('/api/v1/notifications', authRequired, handleGetNotifications);
+app.put('/api/v1/notifications/read-all', authRequired, handleMarkAllRead);
+app.put('/api/v1/notifications/:id/read', authRequired, handleMarkRead);
 
 // Products
 app.post('/api/v1/products', authRequired, handleCreateProduct);

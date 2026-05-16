@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { success, fail } from '../pkg/response';
 
@@ -7,9 +8,7 @@ export async function handleGetUserById(req: Request, res: Response) {
     const userId = parseInt(String(req.params.id));
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        pets: { orderBy: { createdAt: 'desc' } },
-      },
+      include: { pets: { orderBy: { createdAt: 'desc' } } },
     });
     if (!user) return fail(res, '用户不存在', 40401, 404);
 
@@ -21,6 +20,29 @@ export async function handleGetUserById(req: Request, res: Response) {
     return success(res, { ...safe, feedCount, followerCount, followingCount });
   } catch {
     return fail(res, '获取用户信息失败');
+  }
+}
+
+const updateProfileSchema = z.object({
+  nickname: z.string().min(1).max(50).optional(),
+  bio: z.string().max(200).optional(),
+  avatar: z.string().optional(),
+  city: z.string().max(50).optional(),
+  gender: z.number().int().min(0).max(2).optional(),
+});
+
+export async function handleUpdateProfile(req: Request, res: Response) {
+  try {
+    const body = updateProfileSchema.parse(req.body);
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: body,
+    });
+    const { passwordHash, ...safe } = user;
+    return success(res, safe);
+  } catch (err) {
+    if (err instanceof z.ZodError) return fail(res, err.errors[0].message);
+    return fail(res, '更新失败');
   }
 }
 
