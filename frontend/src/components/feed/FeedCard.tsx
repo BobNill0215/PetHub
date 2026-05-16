@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, MessageCircle, Bookmark, Repeat2, ExternalLink } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, Repeat2, Eye, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Avatar } from '@/components/common/Avatar';
@@ -25,6 +25,7 @@ interface FeedItem {
   commentCount: number;
   bookmarkCount: number;
   shareCount?: number;
+  viewCount?: number;
   isPinned?: boolean;
   isFeatured?: boolean;
   createdAt: string;
@@ -124,6 +125,9 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
           <button onClick={() => { if (!showComments) loadComments(); setShowComments(!showComments); }}
             className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-500">
             <MessageCircle className="h-4 w-4" />{commentCount}
+          </button>
+          <button className="flex items-center gap-1 text-sm text-gray-400" title="浏览">
+            <Eye className="h-4 w-4" />{feed.viewCount || 0}
           </button>
           <button onClick={async () => {
             try {

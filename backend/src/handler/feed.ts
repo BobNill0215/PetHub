@@ -110,7 +110,9 @@ export async function handleGetFeedById(req: Request, res: Response) {
     });
     if (!feed) return fail(res, '帖子不存在', 40401, 404);
 
-    let isLiked = false;
+    await prisma.feed.update({ where: { id: feedId }, data: { viewCount: { increment: 1 } } });
+
+  let isLiked = false;
     if (req.user?.userId) {
       const like = await prisma.feedLike.findUnique({
         where: { feedId_userId: { feedId, userId: req.user.userId } },
@@ -118,7 +120,7 @@ export async function handleGetFeedById(req: Request, res: Response) {
       isLiked = !!like;
     }
 
-    return success(res, { ...feed, isLiked });
+    return success(res, { ...feed, viewCount: feed.viewCount + 1, isLiked });
   } catch {
     return fail(res, '获取帖子失败');
   }
@@ -218,6 +220,17 @@ export async function handleGetRelatedFeeds(req: Request, res: Response) {
 
     return success(res, related);
   } catch { return fail(res, '获取推荐失败'); }
+}
+
+export async function handleGetTrending(req: Request, res: Response) {
+  try {
+    const [byViews, byLikes, byComments] = await Promise.all([
+      prisma.feed.findMany({ orderBy: { viewCount: 'desc' }, take: 10, include: { user: { select: { id: true, nickname: true, avatar: true } } } }),
+      prisma.feed.findMany({ orderBy: { likeCount: 'desc' }, take: 10, include: { user: { select: { id: true, nickname: true, avatar: true } } } }),
+      prisma.feed.findMany({ orderBy: { commentCount: 'desc' }, take: 10, include: { user: { select: { id: true, nickname: true, avatar: true } } } }),
+    ]);
+    return success(res, { byViews, byLikes, byComments });
+  } catch { return fail(res, '获取热门失败'); }
 }
 
 export async function handleGetCategories(_req: Request, res: Response) {

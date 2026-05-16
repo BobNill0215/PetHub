@@ -8,6 +8,42 @@ import { CategoryBar } from '@/components/feed/CategoryBar';
 import { Button } from '@/components/common/Button';
 import { useAuthStore } from '@/stores/auth';
 
+function TrendingSidebar() {
+  const [trending, setTrending] = useState<any>(null);
+  useEffect(() => {
+    apiGet<any>('/feeds/trending').then(r => setTrending(r.data)).catch(() => {});
+  }, []);
+  if (!trending) return null;
+  return (
+    <div className="hidden lg:block w-72 shrink-0">
+      <div className="sticky top-20 space-y-4">
+        <div className="rounded-xl border bg-white p-4">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">🔥 热门推荐</h3>
+          <div className="space-y-2">
+            {trending.byViews?.slice(0, 5).map((f: any, i: number) => (
+              <Link key={f.id} href={`/post/${f.id}`} className="flex gap-2 items-start text-sm hover:text-blue-600">
+                <span className="text-xs font-bold text-gray-300 w-4 shrink-0">{i + 1}</span>
+                <span className="truncate">{f.content}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-xl border bg-white p-4">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">💬 最多评论</h3>
+          <div className="space-y-2">
+            {trending.byComments?.slice(0, 5).map((f: any, i: number) => (
+              <Link key={f.id} href={`/post/${f.id}`} className="flex gap-2 items-start text-sm hover:text-blue-600">
+                <span className="text-xs font-bold text-gray-300 w-4 shrink-0">{i + 1}</span>
+                <span className="truncate">{f.content}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FeedPage() {
   const user = useAuthStore((s) => s.user);
   const [feeds, setFeeds] = useState<any[]>([]);
@@ -74,8 +110,11 @@ export default function FeedPage() {
         </div>
       )}
 
-      <div className="space-y-4">
-        {feeds.map((feed: any) => <FeedCard key={feed.id} feed={feed} />)}
+      <div className="flex gap-6">
+        <div className="flex-1 space-y-4">
+          {feeds.map((feed: any) => <FeedCard key={feed.id} feed={feed} />)}
+        </div>
+        <TrendingSidebar />
       </div>
 
       {!loading && feeds.length < total && (

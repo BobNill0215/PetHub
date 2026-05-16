@@ -6,7 +6,7 @@ import { errorHandler, notFoundHandler } from './middleware/error';
 import { authRequired, optionalAuth } from './middleware/auth';
 import { handleRegister, handleLogin, handleGetProfile, handleChangePassword } from './handler/auth';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
-import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetRelatedFeeds, handleGetFeatured, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
+import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetRelatedFeeds, handleGetTrending, handleGetFeatured, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
 import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './handler/user';
 import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, handleCreateComment, handleBookmarkFeed, handleUnbookmarkFeed, handleGetBookmarks, handleReportFeed, handleEditFeed, handleShareFeed } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
@@ -76,6 +76,7 @@ app.delete('/api/v1/feeds/:id/bookmark', authRequired, handleUnbookmarkFeed);
 app.get('/api/v1/bookmarks', authRequired, handleGetBookmarks);
 
 // Reports
+app.get('/api/v1/feeds/trending', handleGetTrending);
 app.post('/api/v1/feeds/:id/report', authRequired, handleReportFeed);
 
 // Share
