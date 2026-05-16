@@ -12,20 +12,28 @@ export default function FeedPage() {
   const user = useAuthStore((s) => s.user);
   const [feeds, setFeeds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const [tab, setTab] = useState<'all' | 'following'>('all');
   const [sort, setSort] = useState<'new' | 'hot'>('new');
 
-  const fetchFeeds = async () => {
-    setLoading(true);
+  const fetchFeeds = async (pageNum = 1, append = false) => {
+    if (pageNum === 1) setLoading(true);
+    else setLoadingMore(true);
     try {
       const url = tab === 'following' && user ? '/feeds/following' : '/feeds';
-      const res = await apiGet<any>(url, { sort });
-      setFeeds(res.data.data || []);
+      const res = await apiGet<any>(url, { sort, page: pageNum, pageSize: 10 });
+      const newData = res.data.data || [];
+      setFeeds(append ? [...feeds, ...newData] : newData);
+      setTotal(res.data.total || 0);
+      setPage(pageNum);
     } catch { setFeeds([]); }
     setLoading(false);
+    setLoadingMore(false);
   };
 
-  useEffect(() => { fetchFeeds(); }, [tab, sort, user]);
+  useEffect(() => { fetchFeeds(1); }, [tab, sort, user]);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
@@ -69,6 +77,15 @@ export default function FeedPage() {
       <div className="space-y-4">
         {feeds.map((feed: any) => <FeedCard key={feed.id} feed={feed} />)}
       </div>
+
+      {!loading && feeds.length < total && (
+        <div className="mt-6 text-center">
+          <Button variant="secondary" loading={loadingMore} onClick={() => fetchFeeds(page + 1, true)}>
+            加载更多
+          </Button>
+          <p className="mt-2 text-xs text-gray-400">{feeds.length} / {total} 条</p>
+        </div>
+      )}
 
       {!user && feeds.length > 0 && (
         <div className="mt-8 text-center rounded-xl border bg-gradient-to-r from-blue-50 to-purple-50 p-6">

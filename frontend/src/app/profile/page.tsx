@@ -8,6 +8,7 @@ import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import { FeedCard } from '@/components/feed/FeedCard';
+import { getUserLevel } from '@/lib/levels';
 import type { Pet, Feed } from '@/types';
 
 export default function ProfilePage() {
@@ -71,7 +72,10 @@ export default function ProfilePage() {
               </div>
             ) : (
               <>
-                <h1 className="text-xl font-bold text-gray-900">{user.nickname}</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-bold text-gray-900">{user.nickname}</h1>
+                  {(() => { const lv = getUserLevel(user.feedCount || 0, 0); return <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{lv.icon} {lv.title}</span> })()}
+                </div>
                 {user.bio && <p className="text-sm text-gray-500">{user.bio}</p>}
                 {user.city && <p className="text-xs text-gray-400">📍 {user.city}</p>}
                 <Button size="sm" variant="ghost" className="mt-2" onClick={() => setEditing(true)}>

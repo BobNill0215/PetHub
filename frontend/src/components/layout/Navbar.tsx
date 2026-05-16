@@ -7,9 +7,12 @@ import { useAuthStore } from '@/stores/auth';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/common/Button';
 import { apiGet, apiPut } from '@/lib/api';
+import { useTheme } from '@/lib/darkmode';
+import { getUserLevel } from '@/lib/levels';
 
 export function Navbar() {
   const router = useRouter();
+  const { theme, toggle: toggleTheme } = useTheme();
   const { user, logout } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
@@ -76,6 +79,9 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="rounded-lg p-2 text-gray-500 hover:bg-gray-100">
+            <span className="text-lg">{theme === 'dark' ? '☀️' : '🌙'}</span>
+          </button>
           {user ? (
             <>
               <div className="relative" ref={notifRef}>
@@ -112,6 +118,9 @@ export function Navbar() {
                 )}
               </div>
 
+              {user && (
+                <span className="text-xs hidden sm:inline">{getUserLevel(user.feedCount || 0).icon}</span>
+              )}
               <Link href="/messages" className="hidden sm:block text-sm text-gray-600 hover:text-gray-900">消息</Link>
               <Link href="/feed/new">
                 <Button variant="ghost" size="sm" className="hidden sm:inline-flex">发布</Button>

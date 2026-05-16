@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth';
+import { ThemeProvider } from '@/lib/darkmode';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const init = useAuthStore((s) => s.init);
@@ -10,5 +11,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
     init();
   }, [init]);
 
-  return <>{children}</>;
+  return <ThemeProvider>{children}</ThemeProvider>;
 }
