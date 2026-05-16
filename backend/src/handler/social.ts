@@ -137,6 +137,18 @@ export async function handleReportFeed(req: Request, res: Response) {
   }
 }
 
+// ── Share / Repost ──
+
+export async function handleShareFeed(req: Request, res: Response) {
+  try {
+    const feedId = parseInt(String(req.params.id));
+    const feed = await prisma.feed.findUnique({ where: { id: feedId } });
+    if (!feed) return fail(res, '帖子不存在', 40401, 404);
+    await prisma.feed.update({ where: { id: feedId }, data: { shareCount: { increment: 1 } } });
+    return success(res, null);
+  } catch { return fail(res, '转发失败'); }
+}
+
 // ── Edit Feed ──
 
 const editFeedSchema = z.object({

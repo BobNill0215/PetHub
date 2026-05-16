@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, MessageCircle, Bookmark, ExternalLink } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, Repeat2, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Avatar } from '@/components/common/Avatar';
@@ -24,6 +24,7 @@ interface FeedItem {
   likeCount: number;
   commentCount: number;
   bookmarkCount: number;
+  shareCount?: number;
   isPinned?: boolean;
   isFeatured?: boolean;
   createdAt: string;
@@ -116,13 +117,17 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
           </div>
         )}
 
-        <div className="mt-4 flex items-center gap-6">
-          <button onClick={toggleLike} className={`flex items-center gap-1.5 text-sm ${liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}>
+        <div className="mt-4 flex items-center gap-5">
+          <button onClick={toggleLike} className={`flex items-center gap-1 text-sm ${liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}>
             <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />{likeCount}
           </button>
           <button onClick={() => { if (!showComments) loadComments(); setShowComments(!showComments); }}
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-500">
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-500">
             <MessageCircle className="h-4 w-4" />{commentCount}
+          </button>
+          <button onClick={async () => { try { await apiPost(`/feeds/${feed.id}/share`); } catch { /* ignore */ } }}
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-green-500">
+            <Repeat2 className="h-4 w-4" />{feed.shareCount || 0}
           </button>
         </div>
       </div>

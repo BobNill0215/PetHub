@@ -79,8 +79,9 @@ export default function ProfilePage() {
           </div>
         </div>
         <div className="mt-4 flex gap-6 text-sm text-gray-600">
-          <span><strong className="text-gray-900">{feeds.length}</strong> 动态</span>
+          <span><strong className="text-gray-900">{feeds.length}</strong> 帖子</span>
           <span><strong className="text-gray-900">{pets.length}</strong> 宠物</span>
+          <Link href="/settings" className="text-blue-600 hover:underline ml-auto">设置</Link>
         </div>
       </div>
 

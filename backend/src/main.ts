@@ -4,11 +4,11 @@ import path from 'path';
 import { config } from './config';
 import { errorHandler, notFoundHandler } from './middleware/error';
 import { authRequired, optionalAuth } from './middleware/auth';
-import { handleRegister, handleLogin, handleGetProfile } from './handler/auth';
+import { handleRegister, handleLogin, handleGetProfile, handleChangePassword } from './handler/auth';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
 import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetFeatured, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
 import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './handler/user';
-import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, handleCreateComment, handleBookmarkFeed, handleUnbookmarkFeed, handleGetBookmarks, handleReportFeed, handleEditFeed } from './handler/social';
+import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, handleCreateComment, handleBookmarkFeed, handleUnbookmarkFeed, handleGetBookmarks, handleReportFeed, handleEditFeed, handleShareFeed } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
 import { handleCreateConversation, handleGetConversations, handleSendMessage, handleGetMessages } from './handler/message';
@@ -34,6 +34,7 @@ app.get('/api/v1/health', (_req, res) => {
 app.post('/api/v1/auth/register', handleRegister);
 app.post('/api/v1/auth/login', handleLogin);
 app.get('/api/v1/users/me', authRequired, handleGetProfile);
+app.put('/api/v1/users/me/password', authRequired, handleChangePassword);
 
 // Users
 app.get('/api/v1/users/:id', handleGetUserById);
@@ -73,6 +74,9 @@ app.get('/api/v1/bookmarks', authRequired, handleGetBookmarks);
 
 // Reports
 app.post('/api/v1/feeds/:id/report', authRequired, handleReportFeed);
+
+// Share
+app.post('/api/v1/feeds/:id/share', handleShareFeed);
 
 // Edit feed
 app.put('/api/v1/feeds/:id', authRequired, handleEditFeed);

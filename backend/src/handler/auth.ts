@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
+import bcrypt from 'bcryptjs';
+import { prisma } from '../lib/prisma';
 import { AuthService } from '../service/auth';
 import { success, fail } from '../pkg/response';
 
@@ -37,6 +39,27 @@ export async function handleLogin(req: Request, res: Response) {
     if (err instanceof z.ZodError) return fail(res, err.errors[0].message);
     if (err instanceof Error) return fail(res, err.message);
     return fail(res, '登录失败');
+  }
+}
+
+const changePasswordSchema = z.object({
+  oldPassword: z.string().min(1),
+  newPassword: z.string().min(6).max(32),
+});
+
+export async function handleChangePassword(req: Request, res: Response) {
+  try {
+    const body = changePasswordSchema.parse(req.body);
+    const user = await prisma.user.findUnique({ where: { id: req.user!.userId } });
+    if (!user) return fail(res, '用户不存在', 40401, 404);
+    const valid = await bcrypt.compare(body.oldPassword, user.passwordHash || '');
+    if (!valid) return fail(res, '原密码错误');
+    const passwordHash = await bcrypt.hash(body.newPassword, 10);
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+    return success(res, null);
+  } catch (err) {
+    if (err instanceof z.ZodError) return fail(res, err.errors[0].message);
+    return fail(res, '修改失败');
   }
 }
 
