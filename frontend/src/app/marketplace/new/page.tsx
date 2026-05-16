@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
+import { ImageUpload } from '@/components/common/ImageUpload';
 import { apiPost } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth';
 
@@ -88,22 +89,7 @@ export default function NewProductPage() {
             rows={4} className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
         </div>
 
-        <div className="flex gap-2">
-          <Input placeholder="图片 URL" value={form.imageUrl} onChange={e => setForm({ ...form, imageUrl: e.target.value })} />
-          <Button type="button" variant="secondary" onClick={addImage} disabled={!form.imageUrl}>添加</Button>
-        </div>
-
-        {form.images.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {form.images.map((url, i) => (
-              <div key={i} className="relative">
-                <img src={url} alt="" className="h-16 w-16 rounded object-cover" />
-                <button type="button" onClick={() => setForm({ ...form, images: form.images.filter((_, j) => j !== i) })}
-                  className="absolute -right-1 -top-1 h-5 w-5 rounded-full bg-red-500 text-xs text-white">×</button>
-              </div>
-            ))}
-          </div>
-        )}
+        <ImageUpload images={form.images} onChange={v => setForm({ ...form, images: v })} />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
         <Button type="submit" loading={loading} className="w-full">发布商品</Button>

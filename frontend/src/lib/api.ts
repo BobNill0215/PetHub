@@ -54,4 +54,12 @@ export async function apiDelete<T>(url: string): Promise<ApiResponse<T>> {
   return res.data;
 }
 
+export async function apiUpload<T>(url: string, formData: FormData): Promise<ApiResponse<T>> {
+  const res = await api.post<ApiResponse<T>>(url, formData, {
+    headers: { 'Content-Type': undefined as any },
+    timeout: 60000,
+  });
+  return res.data;
+}
+
 export default api;

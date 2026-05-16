@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { config } from './config';
 import { errorHandler, notFoundHandler } from './middleware/error';
 import { authRequired, optionalAuth } from './middleware/auth';
@@ -11,6 +12,7 @@ import { handleLikeFeed, handleUnlikeFeed, handleGetComments, handleCreateCommen
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
 import { handleCreateConversation, handleGetConversations, handleSendMessage, handleGetMessages } from './handler/message';
+import { upload, handleUpload, handleUploadMultiple } from './handler/upload';
 import { handleSearch } from './handler/search';
 import { handleGetNotifications, handleMarkRead, handleMarkAllRead } from './handler/notify';
 
@@ -69,6 +71,11 @@ app.post('/api/v1/conversations/users/:userId', authRequired, handleCreateConver
 app.get('/api/v1/conversations', authRequired, handleGetConversations);
 app.post('/api/v1/conversations/:id/messages', authRequired, handleSendMessage);
 app.get('/api/v1/conversations/:id/messages', authRequired, handleGetMessages);
+
+// Upload
+app.post('/api/v1/upload', authRequired, upload.single('file'), handleUpload);
+app.post('/api/v1/upload/multiple', authRequired, upload.array('files', 9), handleUploadMultiple);
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Search
 app.get('/api/v1/search', handleSearch);
