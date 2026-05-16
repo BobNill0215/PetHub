@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { apiGet } from '@/lib/api';
 import { FeedCard } from '@/components/feed/FeedCard';
+import { CategoryBar } from '@/components/feed/CategoryBar';
 import { Button } from '@/components/common/Button';
 import { useAuthStore } from '@/stores/auth';
 
@@ -28,6 +29,7 @@ export default function FeedPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
+      <div className="mb-1"><CategoryBar /></div>
       <div className="mb-4 flex items-center justify-between flex-wrap gap-2">
         <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
           <button onClick={() => setTab('all')}

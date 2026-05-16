@@ -129,6 +129,7 @@ model Feed {
   uuid         String    @unique @default(cuid())
   userId       BigInt    @map("user_id")
   content      String    @db.VarChar(2000)
+  category     String    @default("general") @db.VarChar(30)
   images       String[]
   videoUrl     String?   @map("video_url")
   links        Json?                // [{title:"京东链接",url:"https://..."}]

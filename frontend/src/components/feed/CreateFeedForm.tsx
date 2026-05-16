@@ -12,6 +12,7 @@ export function CreateFeedForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('general');
   const [images, setImages] = useState<string[]>([]);
   const [topics, setTopics] = useState('');
   const [links, setLinks] = useState<{ title: string; url: string }[]>([{ title: '', url: '' }]);
@@ -33,6 +34,7 @@ export function CreateFeedForm() {
       const validLinks = links.filter(l => l.title && l.url);
       await apiPost('/feeds', {
         content,
+        category,
         images,
         links: validLinks.length > 0 ? validLinks : undefined,
         topics: topics ? topics.split(/[,，]/).map(s => s.trim()).filter(Boolean) : [],
@@ -55,6 +57,20 @@ export function CreateFeedForm() {
       </div>
 
       <ImageUpload images={images} onChange={setImages} />
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">板块</label>
+        <select value={category} onChange={e => setCategory(e.target.value)}
+          className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+          <option value="general">综合讨论</option>
+          <option value="cat">猫咪</option>
+          <option value="dog">狗狗</option>
+          <option value="smallpet">小宠</option>
+          <option value="aquatic">水族</option>
+          <option value="reptile">爬虫</option>
+          <option value="insect">昆虫</option>
+        </select>
+      </div>
 
       <Input id="topics" label="话题标签（逗号分隔）" placeholder="猫咪日常, 萌宠" value={topics} onChange={e => setTopics(e.target.value)} />
 

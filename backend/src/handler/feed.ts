@@ -7,8 +7,11 @@ const linkItemSchema = z.object({
   title: z.string().min(1).max(100),
   url: z.string().url('链接格式不正确'),
 });
+const CATEGORIES = ['cat', 'dog', 'smallpet', 'aquatic', 'reptile', 'insect', 'general'] as const;
+
 const createFeedSchema = z.object({
   content: z.string().min(1, '内容不能为空').max(2000),
+  category: z.enum(CATEGORIES).optional(),
   images: z.array(z.string()).max(9).optional(),
   videoUrl: z.string().optional(),
   links: z.array(linkItemSchema).max(5).optional(),
@@ -22,6 +25,7 @@ export async function handleCreateFeed(req: Request, res: Response) {
     const feed = await prisma.feed.create({
       data: {
         content: body.content,
+        category: body.category || 'general',
         images: body.images || [],
         videoUrl: body.videoUrl,
         links: body.links || [],
@@ -50,6 +54,9 @@ export async function handleGetFeeds(req: Request, res: Response) {
     const pageSize = Math.min(20, Math.max(1, parseInt(String(req.query.pageSize)) || 10));
     const currentUserId = req.user?.userId;
     const sort = String(req.query.sort || 'new');
+    const category = req.query.category as string;
+    const where: any = {};
+    if (category && CATEGORIES.includes(category as any)) where.category = category;
 
     const orderBy: any = sort === 'hot'
       ? [{ likeCount: 'desc' }, { commentCount: 'desc' }, { createdAt: 'desc' }]
@@ -57,6 +64,7 @@ export async function handleGetFeeds(req: Request, res: Response) {
 
     const [feeds, total] = await Promise.all([
       prisma.feed.findMany({
+        where,
         orderBy,
         skip: (page - 1) * pageSize,
         take: pageSize,
@@ -111,6 +119,28 @@ export async function handleGetFeedById(req: Request, res: Response) {
     return success(res, { ...feed, isLiked });
   } catch {
     return fail(res, '获取帖子失败');
+  }
+}
+
+export async function handleGetCategories(_req: Request, res: Response) {
+  try {
+    const counts = await prisma.feed.groupBy({ by: ['category'], _count: true });
+    const countMap: Record<string, number> = {};
+    counts.forEach(c => { countMap[c.category] = c._count; });
+
+    const list = [
+      { id: 'general', name: '综合讨论', icon: '💬', count: countMap.general || 0 },
+      { id: 'cat', name: '猫咪', icon: '🐱', count: countMap.cat || 0 },
+      { id: 'dog', name: '狗狗', icon: '🐶', count: countMap.dog || 0 },
+      { id: 'smallpet', name: '小宠', icon: '🐰', count: countMap.smallpet || 0 },
+      { id: 'aquatic', name: '水族', icon: '🐟', count: countMap.aquatic || 0 },
+      { id: 'reptile', name: '爬虫', icon: '🦎', count: countMap.reptile || 0 },
+      { id: 'insect', name: '昆虫', icon: '🐜', count: countMap.insect || 0 },
+    ];
+
+    return success(res, list);
+  } catch {
+    return fail(res, '获取板块失败');
   }
 }
 
