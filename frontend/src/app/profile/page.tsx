@@ -18,6 +18,8 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [pets, setPets] = useState<Pet[]>([]);
   const [feeds, setFeeds] = useState<Feed[]>([]);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [tab, setTab] = useState<'feeds' | 'pets'>('feeds');
 
   useEffect(() => {
@@ -25,6 +27,7 @@ export default function ProfilePage() {
     setForm({ nickname: user.nickname, bio: user.bio || '', city: user.city || '', avatar: user.avatar || '' });
     apiGet<Pet[]>('/pets').then(r => setPets(r.data)).catch(() => {});
     apiGet<{ data: Feed[] }>('/feeds').then(r => setFeeds(r.data.data)).catch(() => {});
+    apiGet<any>(`/users/${user.id}`).then(r => { setFollowerCount(r.data.followerCount || 0); setFollowingCount(r.data.followingCount || 0); }).catch(() => {});
   }, [user]);
 
   const handleSave = async () => {
@@ -81,6 +84,8 @@ export default function ProfilePage() {
         <div className="mt-4 flex gap-6 text-sm text-gray-600">
           <span><strong className="text-gray-900">{feeds.length}</strong> 帖子</span>
           <span><strong className="text-gray-900">{pets.length}</strong> 宠物</span>
+          <Link href={`/user/${user.id}/following`} className="hover:text-blue-600"><strong className="text-gray-900">{followingCount}</strong> 关注</Link>
+          <Link href={`/user/${user.id}/followers`} className="hover:text-blue-600"><strong className="text-gray-900">{followerCount}</strong> 粉丝</Link>
           <Link href="/settings" className="text-blue-600 hover:underline ml-auto">设置</Link>
         </div>
       </div>
