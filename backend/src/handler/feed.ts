@@ -59,8 +59,8 @@ export async function handleGetFeeds(req: Request, res: Response) {
     if (category && CATEGORIES.includes(category as any)) where.category = category;
 
     const orderBy: any = sort === 'hot'
-      ? [{ likeCount: 'desc' }, { commentCount: 'desc' }, { createdAt: 'desc' }]
-      : { createdAt: 'desc' };
+      ? [{ isPinned: 'desc' }, { likeCount: 'desc' }, { commentCount: 'desc' }, { createdAt: 'desc' }]
+      : [{ isPinned: 'desc' }, { createdAt: 'desc' }];
 
     const [feeds, total] = await Promise.all([
       prisma.feed.findMany({
@@ -120,6 +120,61 @@ export async function handleGetFeedById(req: Request, res: Response) {
   } catch {
     return fail(res, '获取帖子失败');
   }
+}
+
+export async function handleTogglePin(req: Request, res: Response) {
+  try {
+    const feedId = parseInt(String(req.params.id));
+    const feed = await prisma.feed.findUnique({ where: { id: feedId } });
+    if (!feed) return fail(res, '帖子不存在', 40401, 404);
+    const updated = await prisma.feed.update({
+      where: { id: feedId },
+      data: { isPinned: !feed.isPinned },
+    });
+    return success(res, updated);
+  } catch { return fail(res, '操作失败'); }
+}
+
+export async function handleToggleFeatured(req: Request, res: Response) {
+  try {
+    const feedId = parseInt(String(req.params.id));
+    const feed = await prisma.feed.findUnique({ where: { id: feedId } });
+    if (!feed) return fail(res, '帖子不存在', 40401, 404);
+    const updated = await prisma.feed.update({
+      where: { id: feedId },
+      data: { isFeatured: !feed.isFeatured },
+    });
+    return success(res, updated);
+  } catch { return fail(res, '操作失败'); }
+}
+
+export async function handleGetFeatured(req: Request, res: Response) {
+  try {
+    const page = Math.max(1, parseInt(String(req.query.page)) || 1);
+    const pageSize = Math.min(20, Math.max(1, parseInt(String(req.query.pageSize)) || 10));
+
+    const [feeds, total] = await Promise.all([
+      prisma.feed.findMany({
+        where: { isFeatured: true },
+        orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: { user: { select: { id: true, nickname: true, avatar: true, city: true } } },
+      }),
+      prisma.feed.count({ where: { isFeatured: true } }),
+    ]);
+
+    let likedFeedIds: number[] = [];
+    if (req.user?.userId) {
+      const likes = await prisma.feedLike.findMany({
+        where: { userId: req.user.userId, feedId: { in: feeds.map(f => f.id) } },
+        select: { feedId: true },
+      });
+      likedFeedIds = likes.map(l => Number(l.feedId));
+    }
+    const data = feeds.map(f => ({ ...f, isLiked: likedFeedIds.includes(Number(f.id)) }));
+    return success(res, { data, total, page, page_size: pageSize });
+  } catch { return fail(res, '获取精华帖失败'); }
 }
 
 export async function handleGetCategories(_req: Request, res: Response) {

@@ -138,6 +138,8 @@ model Feed {
   likeCount    Int       @default(0) @map("like_count")
   commentCount Int       @default(0) @map("comment_count")
   bookmarkCount Int      @default(0) @map("bookmark_count")
+  isPinned     Boolean   @default(false) @map("is_pinned")
+  isFeatured   Boolean   @default(false) @map("is_featured")
   status       Int       @default(1)
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")

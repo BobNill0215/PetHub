@@ -13,15 +13,19 @@ import { useAuthStore } from '@/stores/auth';
 interface FeedItem {
   id: number;
   uuid: string;
+  userId?: number;
   user: { id: number; nickname: string; avatar?: string; city?: string };
   content: string;
   images: string[];
   videoUrl?: string;
   links?: { title: string; url: string }[];
   topics: string[];
+  category?: string;
   likeCount: number;
   commentCount: number;
   bookmarkCount: number;
+  isPinned?: boolean;
+  isFeatured?: boolean;
   createdAt: string;
   isLiked?: boolean;
 }
@@ -71,9 +75,13 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
     <div className="rounded-xl border bg-white shadow-sm">
       <Link href={`/post/${feed.id}`} className="flex items-center gap-3 p-4 hover:bg-gray-50">
         <Avatar name={feed.user.nickname} src={feed.user.avatar} />
-        <div>
-          <p className="text-sm font-medium text-gray-900">{feed.user.nickname}</p>
-          <p className="text-xs text-gray-500">{feed.user.city && `${feed.user.city} · `}{timeAgo(feed.createdAt)}</p>
+        <div className="flex items-center gap-2">
+          <div>
+            <p className="text-sm font-medium text-gray-900">{feed.user.nickname}</p>
+            <p className="text-xs text-gray-500">{feed.user.city && `${feed.user.city} · `}{timeAgo(feed.createdAt)}</p>
+          </div>
+          {feed.isPinned && <span className="text-[10px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded font-medium">置顶</span>}
+          {feed.isFeatured && <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-medium">精华</span>}
         </div>
       </Link>
 
