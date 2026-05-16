@@ -90,6 +90,7 @@ model User {
   sales                Order[]    @relation("seller")
   feedLikes            FeedLike[]
   feedComments         FeedComment[]
+  feedBookmarks        FeedBookmark[]
   conversations1       Conversation[] @relation("conv_user1")
   conversations2       Conversation[] @relation("conv_user2")
   sentMessages         Message[]
@@ -147,6 +148,7 @@ model Feed {
   user     User          @relation(fields: [userId], references: [id])
   likes    FeedLike[]
   comments FeedComment[]
+  bookmarks FeedBookmark[]
 
   @@index([userId])
   @@index([createdAt])
@@ -181,6 +183,32 @@ model FeedComment {
 
   @@index([feedId])
   @@map("feed_comments")
+}
+
+model FeedBookmark {
+  id        BigInt   @id @default(autoincrement()) @map("id")
+  feedId    BigInt   @map("feed_id")
+  userId    BigInt   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  feed Feed @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([feedId, userId])
+  @@map("feed_bookmarks")
+}
+
+model Report {
+  id         BigInt   @id @default(autoincrement()) @map("id")
+  reporterId BigInt   @map("reporter_id")
+  targetType String   @db.VarChar(20)    // feed / comment / user
+  targetId   BigInt   @map("target_id")
+  reason     String   @db.VarChar(500)
+  status     String   @default("pending") @db.VarChar(20)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([status])
+  @@map("reports")
 }
 
 model Notification {

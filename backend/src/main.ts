@@ -8,7 +8,7 @@ import { handleRegister, handleLogin, handleGetProfile } from './handler/auth';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
 import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetFeatured, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
 import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './handler/user';
-import { handleLikeFeed, handleUnlikeFeed, handleGetComments, handleCreateComment } from './handler/social';
+import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, handleCreateComment, handleBookmarkFeed, handleUnbookmarkFeed, handleGetBookmarks, handleReportFeed, handleEditFeed } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
 import { handleCreateConversation, handleGetConversations, handleSendMessage, handleGetMessages } from './handler/message';
@@ -60,10 +60,22 @@ app.delete('/api/v1/feeds/:id', authRequired, handleDeleteFeed);
 // Likes
 app.post('/api/v1/feeds/:id/like', authRequired, handleLikeFeed);
 app.delete('/api/v1/feeds/:id/like', authRequired, handleUnlikeFeed);
+app.get('/api/v1/feeds/:id/likes', handleGetLikes);
 
 // Comments
 app.get('/api/v1/feeds/:id/comments', handleGetComments);
 app.post('/api/v1/feeds/:id/comments', authRequired, handleCreateComment);
+
+// Bookmarks
+app.post('/api/v1/feeds/:id/bookmark', authRequired, handleBookmarkFeed);
+app.delete('/api/v1/feeds/:id/bookmark', authRequired, handleUnbookmarkFeed);
+app.get('/api/v1/bookmarks', authRequired, handleGetBookmarks);
+
+// Reports
+app.post('/api/v1/feeds/:id/report', authRequired, handleReportFeed);
+
+// Edit feed
+app.put('/api/v1/feeds/:id', authRequired, handleEditFeed);
 
 // Follow
 app.post('/api/v1/users/:id/follow', authRequired, handleFollow);
