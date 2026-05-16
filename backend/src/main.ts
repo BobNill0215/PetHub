@@ -10,6 +10,7 @@ import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './ha
 import { handleLikeFeed, handleUnlikeFeed, handleGetComments, handleCreateComment } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
+import { handleCreateConversation, handleGetConversations, handleSendMessage, handleGetMessages } from './handler/message';
 import { handleSearch } from './handler/search';
 import { handleGetNotifications, handleMarkRead, handleMarkAllRead } from './handler/notify';
 
@@ -62,6 +63,12 @@ app.delete('/api/v1/users/:id/follow', authRequired, handleUnfollow);
 app.get('/api/v1/users/:id/followers', handleGetFollowers);
 app.get('/api/v1/users/:id/following', handleGetFollowing);
 app.get('/api/v1/feeds/following', authRequired, handleGetFollowingFeed);
+
+// Messages
+app.post('/api/v1/conversations/users/:userId', authRequired, handleCreateConversation);
+app.get('/api/v1/conversations', authRequired, handleGetConversations);
+app.post('/api/v1/conversations/:id/messages', authRequired, handleSendMessage);
+app.get('/api/v1/conversations/:id/messages', authRequired, handleGetMessages);
 
 // Search
 app.get('/api/v1/search', handleSearch);

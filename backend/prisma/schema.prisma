@@ -90,6 +90,9 @@ model User {
   sales                Order[]    @relation("seller")
   feedLikes            FeedLike[]
   feedComments         FeedComment[]
+  conversations1       Conversation[] @relation("conv_user1")
+  conversations2       Conversation[] @relation("conv_user2")
+  sentMessages         Message[]
 
   @@map("users")
 }
@@ -190,6 +193,39 @@ model Notification {
   @@index([userId, isRead])
   @@index([userId, createdAt])
   @@map("notifications")
+}
+
+model Conversation {
+  id         BigInt    @id @default(autoincrement()) @map("id")
+  uuid       String    @unique @default(cuid())
+  user1Id    BigInt    @map("user1_id")
+  user2Id    BigInt    @map("user2_id")
+  lastMsgAt  DateTime? @map("last_msg_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user1     User      @relation("conv_user1", fields: [user1Id], references: [id])
+  user2     User      @relation("conv_user2", fields: [user2Id], references: [id])
+  messages  Message[]
+
+  @@index([user1Id])
+  @@index([user2Id])
+  @@unique([user1Id, user2Id])
+  @@map("conversations")
+}
+
+model Message {
+  id             BigInt       @id @default(autoincrement()) @map("id")
+  conversationId BigInt       @map("conversation_id")
+  senderId       BigInt       @map("sender_id")
+  content        String       @db.VarChar(2000)
+  messageType    String       @default("text") @map("message_type") @db.VarChar(20)
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id])
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
 }
 
 model Follow {

@@ -112,6 +112,7 @@ export function Navbar() {
                 )}
               </div>
 
+              <Link href="/messages" className="hidden sm:block text-sm text-gray-600 hover:text-gray-900">消息</Link>
               <Link href="/feed/new">
                 <Button variant="ghost" size="sm" className="hidden sm:inline-flex">发布</Button>
               </Link>
