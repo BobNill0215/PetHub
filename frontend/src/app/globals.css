@@ -1,28 +1,37 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   @apply bg-gray-50 text-gray-900;
 }
-
 .dark body {
   @apply bg-gray-950 text-gray-100;
 }
 
+/* Blue theme - overrides Tailwind blue palette */
 .theme-blue {
-  --color-accent: #3b82f6;
-}
-.theme-blue body {
-  --color-primary: #1d4ed8;
+  --color-blue-50: #dbeafe;
+  --color-blue-100: #bfdbfe;
+  --color-blue-200: #93c5fd;
+  --color-blue-300: #60a5fa;
+  --color-blue-400: #3b82f6;
+  --color-blue-500: #2563eb;
+  --color-blue-600: #1d4ed8;
+  --color-blue-700: #1e40af;
+  --color-blue-800: #1e3a8a;
 }
 
+/* Purple theme - replaces blue with purple */
 .theme-purple {
-  --color-accent: #8b5cf6;
-}
-.theme-purple body {
-  --color-primary: #7c3aed;
+  --color-blue-50: #ede9fe;
+  --color-blue-100: #ddd6fe;
+  --color-blue-200: #c4b5fd;
+  --color-blue-300: #a78bfa;
+  --color-blue-400: #8b5cf6;
+  --color-blue-500: #7c3aed;
+  --color-blue-600: #6d28d9;
+  --color-blue-700: #5b21b6;
+  --color-blue-800: #4c1d95;
 }
