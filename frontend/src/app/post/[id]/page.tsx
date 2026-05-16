@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
 import { Button } from '@/components/common/Button';
 import { FeedCard } from '@/components/feed/FeedCard';
 import { useAuthStore } from '@/stores/auth';
+
+const BACKEND = 'https://backend-production-7608.up.railway.app/api/v1';
 
 export default function PostDetailPage() {
   const { id } = useParams();
@@ -42,6 +45,8 @@ export default function PostDetailPage() {
     try { await apiPost(`/feeds/${id}/report`, { reason }); alert('举报已提交'); } catch { /* ignore */ }
   };
 
+  const [related, setRelated] = useState<any[]>([]);
+  useEffect(() => { if (id) fetch(BACKEND + '/feeds/' + id + '/related').then(r => r.json()).then(d => setRelated(d.data || [])).catch(() => {}); }, [id]);
   if (loading) return <div className="text-center py-20 text-gray-400">加载中...</div>;
   if (!feed) return <div className="text-center py-20 text-gray-500">帖子不存在</div>;
 
@@ -81,6 +86,21 @@ export default function PostDetailPage() {
         }}>{feed.isFeatured ? '取消精华' : '精华'}</Button>
         <button onClick={handleReport} className="text-xs text-gray-400 hover:text-red-500 ml-auto">举报</button>
       </div>
+
+      {related.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">📎 相关推荐</h2>
+          <div className="space-y-2">
+            {related.map((r: any) => (
+              <Link key={r.id} href={`/post/${r.id}`}
+                className="block rounded-lg border bg-white p-3 text-sm hover:bg-gray-50">
+                <p className="text-gray-900 font-medium truncate">{r.content}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{r.user.nickname}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

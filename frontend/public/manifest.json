@@ -1,0 +1,13 @@
+{
+  "name": "PetHub 宠物社区",
+  "short_name": "PetHub",
+  "description": "宠物爱好者交流社区 - 分享萌宠日常、交流养宠经验",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -6,7 +6,7 @@ import { errorHandler, notFoundHandler } from './middleware/error';
 import { authRequired, optionalAuth } from './middleware/auth';
 import { handleRegister, handleLogin, handleGetProfile, handleChangePassword } from './handler/auth';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
-import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetFeatured, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
+import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetRelatedFeeds, handleGetFeatured, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
 import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './handler/user';
 import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, handleCreateComment, handleBookmarkFeed, handleUnbookmarkFeed, handleGetBookmarks, handleReportFeed, handleEditFeed, handleShareFeed } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
@@ -51,6 +51,7 @@ app.delete('/api/v1/pets/:id', authRequired, handleDeletePet);
 // Feeds
 app.post('/api/v1/feeds', authRequired, handleCreateFeed);
 app.get('/api/v1/feeds', optionalAuth, handleGetFeeds);
+app.get('/api/v1/feeds/:id/related', handleGetRelatedFeeds);
 app.patch('/api/v1/feeds/:id/images', authRequired, handleUpdateFeedImages);
 app.get('/api/v1/categories', handleGetCategories);
 app.get('/api/v1/feeds/featured', handleGetFeatured);

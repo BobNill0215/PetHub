@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { href: '/', label: '首页', icon: '🏠' },
   { href: '/feed', label: '论坛', icon: '📝' },
   { href: '/marketplace', label: '好物', icon: '🛒' },
-  { href: '/messages', label: '消息', icon: '💬' },
+  { href: '/notifications', label: '通知', icon: '🔔' },
   { href: '/profile', label: '我的', icon: '👤' },
 ];
 

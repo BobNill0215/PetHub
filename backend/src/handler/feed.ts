@@ -199,6 +199,27 @@ export async function handleUpdateFeedImages(req: Request, res: Response) {
   } catch { return fail(res, '更新失败'); }
 }
 
+export async function handleGetRelatedFeeds(req: Request, res: Response) {
+  try {
+    const feedId = parseInt(String(req.params.id));
+    const feed = await prisma.feed.findUnique({ where: { id: feedId } });
+    if (!feed) return fail(res, '帖子不存在', 40401, 404);
+
+    const where: any = { id: { not: feedId } };
+    if (feed.topics.length > 0) where.topics = { hasSome: feed.topics };
+    else if (feed.category) where.category = feed.category;
+
+    const related = await prisma.feed.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      include: { user: { select: { id: true, nickname: true, avatar: true } } },
+    });
+
+    return success(res, related);
+  } catch { return fail(res, '获取推荐失败'); }
+}
+
 export async function handleGetCategories(_req: Request, res: Response) {
   try {
     const counts = await prisma.feed.groupBy({ by: ['category'], _count: true });

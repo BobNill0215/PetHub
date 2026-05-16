@@ -31,7 +31,12 @@ export default function UserPage() {
         <div className="flex items-start gap-4">
           <Avatar name={profile.nickname} src={profile.avatar} size="lg" />
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900">{profile.nickname}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-gray-900">{profile.nickname}</h1>
+              {profile.lastActiveAt && (Date.now() - new Date(profile.lastActiveAt).getTime() < 5 * 60 * 1000) && (
+                <span className="flex h-2.5 w-2.5 rounded-full bg-green-500" title="在线" />
+              )}
+            </div>
             {profile.bio && <p className="text-sm text-gray-500 mt-1">{profile.bio}</p>}
             {profile.city && <p className="text-xs text-gray-400 mt-0.5">📍 {profile.city}</p>}
           </div>

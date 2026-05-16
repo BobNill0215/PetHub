@@ -7,12 +7,12 @@ import { useAuthStore } from '@/stores/auth';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/common/Button';
 import { apiGet, apiPut } from '@/lib/api';
-import { useTheme } from '@/lib/darkmode';
+import { useTheme, Theme } from '@/lib/darkmode';
 import { getUserLevel } from '@/lib/levels';
 
 export function Navbar() {
   const router = useRouter();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { theme, setTheme, themes, labels } = useTheme();
   const { user, logout } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
@@ -79,9 +79,17 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button onClick={toggleTheme} className="rounded-lg p-2 text-gray-500 hover:bg-gray-100">
-            <span className="text-lg">{theme === 'dark' ? '☀️' : '🌙'}</span>
-          </button>
+          <div className="relative group">
+            <button className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 text-lg">{labels[theme]?.split(' ')[0] || '☀️'}</button>
+            <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-white dark:bg-gray-800 rounded-xl border shadow-lg py-1 min-w-[120px] z-50">
+              {themes.map(t => (
+                <button key={t} onClick={() => setTheme(t)}
+                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${theme === t ? 'text-blue-600 font-medium' : 'text-gray-700 dark:text-gray-300'}`}>
+                  {labels[t]}
+                </button>
+              ))}
+            </div>
+          </div>
           {user ? (
             <>
               <div className="relative" ref={notifRef}>

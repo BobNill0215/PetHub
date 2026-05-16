@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { prisma } from '../lib/prisma';
 import { verifyToken, TokenPayload } from '../pkg/jwt';
 import { fail } from '../pkg/response';
 
@@ -18,6 +19,7 @@ export function authRequired(req: Request, res: Response, next: NextFunction) {
   try {
     const token = header.slice(7);
     req.user = verifyToken(token);
+    prisma.user.update({ where: { id: req.user.userId }, data: { lastActiveAt: new Date() } }).catch(() => {});
     next();
   } catch {
     return fail(res, '登录已过期，请重新登录', 40004, 401);

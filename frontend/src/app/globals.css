@@ -12,3 +12,17 @@ body {
 .dark body {
   @apply bg-gray-950 text-gray-100;
 }
+
+.theme-blue {
+  --color-accent: #3b82f6;
+}
+.theme-blue body {
+  --color-primary: #1d4ed8;
+}
+
+.theme-purple {
+  --color-accent: #8b5cf6;
+}
+.theme-purple body {
+  --color-primary: #7c3aed;
+}
