@@ -55,6 +55,7 @@ app.get('/api/v1/feeds/:id/related', handleGetRelatedFeeds);
 app.patch('/api/v1/feeds/:id/images', authRequired, handleUpdateFeedImages);
 app.get('/api/v1/categories', handleGetCategories);
 app.get('/api/v1/feeds/featured', handleGetFeatured);
+app.get('/api/v1/feeds/following', authRequired, handleGetFollowingFeed);
 app.get('/api/v1/feeds/:id', optionalAuth, handleGetFeedById);
 app.post('/api/v1/feeds/:id/pin', authRequired, handleTogglePin);
 app.post('/api/v1/feeds/:id/featured', authRequired, handleToggleFeatured);
@@ -88,7 +89,6 @@ app.post('/api/v1/users/:id/follow', authRequired, handleFollow);
 app.delete('/api/v1/users/:id/follow', authRequired, handleUnfollow);
 app.get('/api/v1/users/:id/followers', handleGetFollowers);
 app.get('/api/v1/users/:id/following', handleGetFollowing);
-app.get('/api/v1/feeds/following', authRequired, handleGetFollowingFeed);
 
 // Messages
 app.post('/api/v1/conversations/users/:userId', authRequired, handleCreateConversation);
