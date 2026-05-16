@@ -25,10 +25,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const applyTheme = (t: Theme) => {
     const root = document.documentElement;
-    root.classList.remove('dark', 'theme-blue', 'theme-purple');
+    root.className = root.className.replace(/dark|theme-blue|theme-purple/g, '').trim();
     if (t === 'dark') root.classList.add('dark');
-    if (t === 'blue') { root.classList.add('dark'); root.classList.add('theme-blue'); }
-    if (t === 'purple') { root.classList.add('dark'); root.classList.add('theme-purple'); }
+    if (t === 'blue') root.classList.add('theme-blue');
+    if (t === 'purple') root.classList.add('theme-purple');
     localStorage.setItem('theme', t);
   };
 

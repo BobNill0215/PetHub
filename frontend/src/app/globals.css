@@ -3,35 +3,29 @@
 
 html { scroll-behavior: smooth; }
 
-body {
-  @apply bg-gray-50 text-gray-900;
-}
-.dark body {
-  @apply bg-gray-950 text-gray-100;
-}
+body { @apply bg-gray-50 text-gray-900; }
+.dark body { @apply bg-gray-950 text-gray-100; }
 
-/* Blue theme - overrides Tailwind blue palette */
+/* Blue theme — blue-tinted backgrounds, deeper blue accents */
 .theme-blue {
-  --color-blue-50: #dbeafe;
-  --color-blue-100: #bfdbfe;
-  --color-blue-200: #93c5fd;
-  --color-blue-300: #60a5fa;
-  --color-blue-400: #3b82f6;
-  --color-blue-500: #2563eb;
-  --color-blue-600: #1d4ed8;
-  --color-blue-700: #1e40af;
-  --color-blue-800: #1e3a8a;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-gray-50: #eff6ff;
+  --color-gray-100: #dbeafe;
 }
+.theme-blue body { background-color: #eff6ff; }
 
-/* Purple theme - replaces blue with purple */
+/* Purple theme — purple accents on light backgrounds */
 .theme-purple {
-  --color-blue-50: #ede9fe;
-  --color-blue-100: #ddd6fe;
-  --color-blue-200: #c4b5fd;
-  --color-blue-300: #a78bfa;
-  --color-blue-400: #8b5cf6;
-  --color-blue-500: #7c3aed;
-  --color-blue-600: #6d28d9;
-  --color-blue-700: #5b21b6;
-  --color-blue-800: #4c1d95;
+  --color-blue-400: #c084fc;
+  --color-blue-500: #a855f7;
+  --color-blue-600: #9333ea;
+  --color-blue-700: #7e22ce;
+  --color-blue-800: #6b21a8;
+  --color-gray-50: #faf5ff;
+  --color-gray-100: #f3e8ff;
 }
+.theme-purple body { background-color: #faf5ff; }
