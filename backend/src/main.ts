@@ -51,13 +51,13 @@ app.delete('/api/v1/pets/:id', authRequired, handleDeletePet);
 // Feeds
 app.post('/api/v1/feeds', authRequired, handleCreateFeed);
 app.get('/api/v1/feeds', optionalAuth, handleGetFeeds);
-app.get('/api/v1/feeds/:id/related', handleGetRelatedFeeds);
-app.patch('/api/v1/feeds/:id/images', authRequired, handleUpdateFeedImages);
-app.get('/api/v1/categories', handleGetCategories);
-app.get('/api/v1/feeds/featured', handleGetFeatured);
 app.get('/api/v1/feeds/trending', handleGetTrending);
+app.get('/api/v1/feeds/featured', handleGetFeatured);
 app.get('/api/v1/feeds/drafts', authRequired, handleGetDrafts);
 app.get('/api/v1/feeds/following', authRequired, handleGetFollowingFeed);
+app.get('/api/v1/categories', handleGetCategories);
+app.get('/api/v1/feeds/:id/related', handleGetRelatedFeeds);
+app.patch('/api/v1/feeds/:id/images', authRequired, handleUpdateFeedImages);
 app.get('/api/v1/feeds/:id', optionalAuth, handleGetFeedById);
 app.post('/api/v1/feeds/:id/pin', authRequired, handleTogglePin);
 app.post('/api/v1/feeds/:id/featured', authRequired, handleToggleFeatured);
