@@ -177,6 +177,26 @@ export async function handleGetFeatured(req: Request, res: Response) {
   } catch { return fail(res, '获取精华帖失败'); }
 }
 
+export async function handleUpdateFeedImages(req: Request, res: Response) {
+  try {
+    const feedId = parseInt(String(req.params.id));
+    const feed = await prisma.feed.findFirst({
+      where: { id: feedId, userId: req.user!.userId },
+    });
+    if (!feed) return fail(res, '帖子不存在或无权编辑', 40401, 404);
+
+    const { images, videoUrl } = req.body;
+    const updated = await prisma.feed.update({
+      where: { id: feedId },
+      data: {
+        ...(images ? { images } : {}),
+        ...(videoUrl !== undefined ? { videoUrl } : {}),
+      },
+    });
+    return success(res, updated);
+  } catch { return fail(res, '更新失败'); }
+}
+
 export async function handleGetCategories(_req: Request, res: Response) {
   try {
     const counts = await prisma.feed.groupBy({ by: ['category'], _count: true });
