@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/auth';
 import { apiGet, apiPut } from '@/lib/api';
 import { Avatar } from '@/components/common/Avatar';
@@ -36,7 +37,17 @@ export default function ProfilePage() {
     setSaving(false);
   };
 
-  if (!user) return <div className="text-center py-20 text-gray-500">请先登录</div>;
+  if (!user) return (
+    <div className="mx-auto max-w-sm px-4 py-20 text-center">
+      <div className="text-6xl mb-6">🐾</div>
+      <h1 className="text-2xl font-bold text-gray-900">创建你的个人主页</h1>
+      <p className="mt-3 text-gray-500">展示你的宠物、分享动态、管理商品</p>
+      <div className="mt-8 flex justify-center gap-3">
+        <Link href="/register"><Button>免费注册</Button></Link>
+        <Link href="/login"><Button variant="secondary">登录</Button></Link>
+      </div>
+    </div>
+  );
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">

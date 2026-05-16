@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { apiGet } from '@/lib/api';
 import { Avatar } from '@/components/common/Avatar';
 import { useAuthStore } from '@/stores/auth';
+import { Button } from '@/components/common/Button';
 import { timeAgo } from '@/lib/utils';
 
 interface Conversation {
@@ -28,7 +29,17 @@ export default function MessagesPage() {
       .finally(() => setLoading(false));
   }, [user]);
 
-  if (!user) return <div className="text-center py-20 text-gray-500">请先登录</div>;
+  if (!user) return (
+    <div className="mx-auto max-w-sm px-4 py-20 text-center">
+      <div className="text-6xl mb-6">💬</div>
+      <h1 className="text-2xl font-bold text-gray-900">和宠友即时聊天</h1>
+      <p className="mt-3 text-gray-500">登录后即可收发消息，和宠物爱好者交流</p>
+      <div className="mt-8 flex justify-center gap-3">
+        <Link href="/register"><Button>免费注册</Button></Link>
+        <Link href="/login"><Button variant="secondary">登录</Button></Link>
+      </div>
+    </div>
+  );
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">

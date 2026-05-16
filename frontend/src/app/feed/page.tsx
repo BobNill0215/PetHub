@@ -7,24 +7,9 @@ import { FeedCard } from '@/components/feed/FeedCard';
 import { Button } from '@/components/common/Button';
 import { useAuthStore } from '@/stores/auth';
 
-interface FeedItem {
-  id: number;
-  uuid: string;
-  user: { id: number; nickname: string; avatar?: string; city?: string };
-  content: string;
-  images: string[];
-  videoUrl?: string;
-  topics: string[];
-  likeCount: number;
-  commentCount: number;
-  bookmarkCount: number;
-  createdAt: string;
-  isLiked?: boolean;
-}
-
 export default function FeedPage() {
   const user = useAuthStore((s) => s.user);
-  const [feeds, setFeeds] = useState<FeedItem[]>([]);
+  const [feeds, setFeeds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'all' | 'following'>('all');
 
@@ -32,8 +17,8 @@ export default function FeedPage() {
     setLoading(true);
     try {
       const url = tab === 'following' && user ? '/feeds/following' : '/feeds';
-      const res = await apiGet<{ data: FeedItem[] }>(url);
-      setFeeds(res.data.data);
+      const res = await apiGet<any>(url);
+      setFeeds(res.data.data || []);
     } catch { setFeeds([]); }
     setLoading(false);
   };
@@ -48,10 +33,12 @@ export default function FeedPage() {
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${tab === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}>
             全部
           </button>
-          <button onClick={() => setTab('following')}
-            className={`rounded-md px-4 py-1.5 text-sm font-medium ${tab === 'following' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}>
-            关注
-          </button>
+          {user && (
+            <button onClick={() => setTab('following')}
+              className={`rounded-md px-4 py-1.5 text-sm font-medium ${tab === 'following' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}>
+              关注
+            </button>
+          )}
         </div>
         {user && <Link href="/feed/new"><Button size="sm">+ 发布</Button></Link>}
       </div>
@@ -63,16 +50,25 @@ export default function FeedPage() {
           <p className="text-gray-500">
             {tab === 'following' ? '关注更多用户，查看他们的动态' : '还没有动态'}
           </p>
-          {tab === 'following' && !user && <Link href="/login"><Button className="mt-4">登录后查看</Button></Link>}
+          {tab === 'all' && !user && (
+            <div className="mt-4">
+              <Link href="/register"><Button>注册后发布第一条动态</Button></Link>
+            </div>
+          )}
           {tab === 'all' && user && <Link href="/feed/new"><Button className="mt-4">发布第一条动态</Button></Link>}
         </div>
       )}
 
       <div className="space-y-4">
-        {feeds.map((feed) => (
-          <FeedCard key={feed.id} feed={feed} />
-        ))}
+        {feeds.map((feed: any) => <FeedCard key={feed.id} feed={feed} />)}
       </div>
+
+      {!user && feeds.length > 0 && (
+        <div className="mt-8 text-center rounded-xl border bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+          <p className="text-gray-700">加入 PetHub，和万千宠友一起交流</p>
+          <Link href="/register"><Button className="mt-3">免费注册</Button></Link>
+        </div>
+      )}
     </div>
   );
 }
