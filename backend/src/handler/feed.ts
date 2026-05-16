@@ -3,10 +3,15 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { success, fail } from '../pkg/response';
 
+const linkItemSchema = z.object({
+  title: z.string().min(1).max(100),
+  url: z.string().url('链接格式不正确'),
+});
 const createFeedSchema = z.object({
   content: z.string().min(1, '内容不能为空').max(2000),
   images: z.array(z.string()).max(9).optional(),
   videoUrl: z.string().optional(),
+  links: z.array(linkItemSchema).max(5).optional(),
   topics: z.array(z.string()).max(10).optional(),
   petIds: z.array(z.number()).optional(),
 });
@@ -19,6 +24,7 @@ export async function handleCreateFeed(req: Request, res: Response) {
         content: body.content,
         images: body.images || [],
         videoUrl: body.videoUrl,
+        links: body.links || [],
         topics: body.topics || [],
         petIds: body.petIds || [],
         userId: req.user!.userId,

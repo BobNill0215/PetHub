@@ -23,7 +23,7 @@ export default function HomePage() {
       <div className="mx-auto max-w-4xl px-4 py-6">
         <div className="mb-6 flex gap-3">
           <Link href="/feed/new"><Button size="sm">📝 发动态</Button></Link>
-          <Link href="/marketplace/new"><Button size="sm" variant="secondary">🏪 发商品</Button></Link>
+            <Link href="/marketplace/new" className="hidden"><Button size="sm" variant="secondary">🏪 发商品</Button></Link>
           <Link href="/pets/add"><Button size="sm" variant="secondary">🐾 加宠物</Button></Link>
         </div>
         <div className="flex gap-6">
@@ -126,41 +126,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Products preview (always visible) ── */}
-      <section className="py-20">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-center text-3xl font-bold text-gray-900">热门商品</h2>
-          <p className="mt-4 text-center text-gray-500">发现宠友推荐的好物</p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {products.length === 0 ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-xl border bg-white p-3 shadow-sm">
-                  <div className="aspect-square rounded-lg bg-gray-100" />
-                  <div className="mt-2 h-4 w-3/4 rounded bg-gray-100" />
-                  <div className="mt-1 h-5 w-1/3 rounded bg-gray-100" />
+      {/* ── Products preview ── */}
+      {products.length > 0 && (
+        <section className="py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <h2 className="text-center text-3xl font-bold text-gray-900">🛒 宠友好物推荐</h2>
+            <p className="mt-4 text-center text-gray-500">宠友推荐的宠物用品，点链接直接购买</p>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {products.slice(0, 4).map((p: any) => (
+                <div key={p.id} className="rounded-xl border bg-white p-3 shadow-sm">
+                  <p className="text-sm font-medium text-gray-900">{p.title}</p>
+                  <p className="text-lg font-bold text-red-500">¥{(p.price / 100).toFixed(2)}</p>
                 </div>
-              ))
-            ) : products.slice(0, 4).map((p: any) => (
-              <div key={p.id} className="rounded-xl border bg-white p-3 shadow-sm">
-                {p.images[0] ? (
-                  <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                    <img src={p.images[0]} alt="" className="h-full w-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="aspect-square rounded-lg bg-gray-50 flex items-center justify-center text-gray-300 text-sm">
-                    暂无图片
-                  </div>
-                )}
-                <p className="mt-2 text-sm font-medium text-gray-900">{p.title}</p>
-                <p className="text-lg font-bold text-red-500">¥{(p.price / 100).toFixed(2)}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Link href="/marketplace"><Button variant="secondary">看好物推荐 →</Button></Link>
+            </div>
           </div>
-          <div className="mt-8 text-center">
-            <Link href="/marketplace"><Button variant="secondary">逛逛商城 →</Button></Link>
-          </div>
-        </div>
-      </section> 
+        </section>
+      )}
 
       {/* ── Features grid ── */}
       <section className="bg-blue-600 py-20">

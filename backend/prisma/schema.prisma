@@ -131,6 +131,7 @@ model Feed {
   content      String    @db.VarChar(2000)
   images       String[]
   videoUrl     String?   @map("video_url")
+  links        Json?                // [{title:"京东链接",url:"https://..."}]
   topics       String[]
   petIds       BigInt[]  @map("pet_ids")
   likeCount    Int       @default(0) @map("like_count")

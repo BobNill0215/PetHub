@@ -14,15 +14,27 @@ export function CreateFeedForm() {
   const [content, setContent] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [topics, setTopics] = useState('');
+  const [links, setLinks] = useState<{ title: string; url: string }[]>([{ title: '', url: '' }]);
+
+  const updateLink = (i: number, field: 'title' | 'url', value: string) => {
+    const next = [...links];
+    next[i] = { ...next[i], [field]: value };
+    setLinks(next);
+  };
+
+  const addLink = () => setLinks([...links, { title: '', url: '' }]);
+  const removeLink = (i: number) => setLinks(links.filter((_, j) => j !== i));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
+      const validLinks = links.filter(l => l.title && l.url);
       await apiPost('/feeds', {
         content,
         images,
+        links: validLinks.length > 0 ? validLinks : undefined,
         topics: topics ? topics.split(/[,，]/).map(s => s.trim()).filter(Boolean) : [],
       });
       router.push('/feed');
@@ -42,16 +54,34 @@ export function CreateFeedForm() {
           placeholder="分享你家毛孩子的日常 🐾" />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">图片</label>
-        <ImageUpload images={images} onChange={setImages} />
-      </div>
+      <ImageUpload images={images} onChange={setImages} />
 
       <Input id="topics" label="话题标签（逗号分隔）" placeholder="猫咪日常, 萌宠" value={topics} onChange={e => setTopics(e.target.value)} />
 
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">🛒 推荐商品链接（可选）</label>
+        <p className="text-xs text-gray-400 mb-2">可以添加京东、淘宝、亚马逊等购物链接</p>
+        <div className="space-y-2">
+          {links.map((link, i) => (
+            <div key={i} className="flex gap-2 items-start">
+              <div className="flex-1 grid grid-cols-2 gap-2">
+                <input value={link.title} onChange={e => updateLink(i, 'title', e.target.value)}
+                  placeholder="商品名称" className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+                <input value={link.url} onChange={e => updateLink(i, 'url', e.target.value)}
+                  placeholder="https://..." className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              </div>
+              {links.length > 1 && (
+                <button type="button" onClick={() => removeLink(i)} className="text-red-400 hover:text-red-600 mt-2">×</button>
+              )}
+            </div>
+          ))}
+          <Button type="button" variant="ghost" size="sm" onClick={addLink}>+ 添加链接</Button>
+        </div>
+      </div>
+
       {error && <p className="text-sm text-red-500">{error}</p>}
       <div className="flex gap-3">
-        <Button type="submit" loading={loading}>发布</Button>
+        <Button type="submit" loading={loading}>发布帖子</Button>
         <Button type="button" variant="secondary" onClick={() => router.back()}>取消</Button>
       </div>
     </form>

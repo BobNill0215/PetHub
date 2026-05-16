@@ -72,7 +72,7 @@ export function Navbar() {
 
         <div className="hidden items-center gap-5 md:flex">
           <Link href="/feed" className="text-sm font-medium text-gray-600 hover:text-gray-900">动态</Link>
-          <Link href="/marketplace" className="text-sm font-medium text-gray-600 hover:text-gray-900">商城</Link>
+          <Link href="/marketplace" className="text-sm font-medium text-gray-600 hover:text-gray-900">好物</Link>
         </div>
 
         <div className="flex items-center gap-2">

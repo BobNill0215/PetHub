@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, MessageCircle, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Avatar } from '@/components/common/Avatar';
@@ -17,6 +17,7 @@ interface FeedItem {
   content: string;
   images: string[];
   videoUrl?: string;
+  links?: { title: string; url: string }[];
   topics: string[];
   likeCount: number;
   commentCount: number;
@@ -44,32 +45,15 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
 
   const toggleLike = async () => {
     try {
-      if (liked) {
-        await apiDelete(`/feeds/${feed.id}/like`);
-        setLiked(false);
-        setLikeCount(c => c - 1);
-      } else {
-        await apiPost(`/feeds/${feed.id}/like`);
-        setLiked(true);
-        setLikeCount(c => c + 1);
-      }
+      if (liked) { await apiDelete(`/feeds/${feed.id}/like`); setLiked(false); setLikeCount(c => c - 1); }
+      else { await apiPost(`/feeds/${feed.id}/like`); setLiked(true); setLikeCount(c => c + 1); }
     } catch { /* ignore */ }
   };
 
   const loadComments = async () => {
     setLoadingComments(true);
-    try {
-      const res = await apiGet<Comment[]>(`/feeds/${feed.id}/comments`);
-      setComments(res.data);
-    } catch { /* ignore */ }
+    try { const res = await apiGet<Comment[]>(`/feeds/${feed.id}/comments`); setComments(res.data); } catch { /* ignore */ }
     setLoadingComments(false);
-  };
-
-  const toggleComments = () => {
-    if (!showComments) {
-      loadComments();
-    }
-    setShowComments(!showComments);
   };
 
   const submitComment = async (e: React.FormEvent) => {
@@ -89,9 +73,7 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
         <Avatar name={feed.user.nickname} src={feed.user.avatar} />
         <div>
           <p className="text-sm font-medium text-gray-900">{feed.user.nickname}</p>
-          <p className="text-xs text-gray-500">
-            {feed.user.city && `${feed.user.city} · `}{timeAgo(feed.createdAt)}
-          </p>
+          <p className="text-xs text-gray-500">{feed.user.city && `${feed.user.city} · `}{timeAgo(feed.createdAt)}</p>
         </div>
       </div>
 
@@ -103,6 +85,7 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
 
       <div className="p-4">
         <p className="text-sm text-gray-800 whitespace-pre-wrap">{feed.content}</p>
+
         {feed.topics.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
             {feed.topics.map(t => (
@@ -110,17 +93,28 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
             ))}
           </div>
         )}
+
+        {feed.links && feed.links.length > 0 && (
+          <div className="mt-3 space-y-2 border-t pt-3">
+            <p className="text-xs font-medium text-gray-500">🛒 推荐商品</p>
+            {feed.links.map((link, i) => (
+              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg bg-orange-50 px-3 py-2 text-sm text-orange-700 hover:bg-orange-100">
+                <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                <span className="flex-1 truncate">{link.title}</span>
+                <span className="text-xs text-orange-500 shrink-0">去购买 →</span>
+              </a>
+            ))}
+          </div>
+        )}
+
         <div className="mt-4 flex items-center gap-6">
           <button onClick={toggleLike} className={`flex items-center gap-1.5 text-sm ${liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}>
-            <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
-            {likeCount}
+            <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />{likeCount}
           </button>
-          <button onClick={toggleComments} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-500">
-            <MessageCircle className="h-4 w-4" />
-            {commentCount}
-          </button>
-          <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-yellow-500">
-            <Bookmark className="h-4 w-4" />
+          <button onClick={() => { if (!showComments) loadComments(); setShowComments(!showComments); }}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-500">
+            <MessageCircle className="h-4 w-4" />{commentCount}
           </button>
         </div>
       </div>
@@ -129,32 +123,25 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
         <div className="border-t px-4 py-3">
           {currentUser && (
             <form onSubmit={submitComment} className="mb-3 flex gap-2">
-              <Input
-                placeholder="写评论..."
-                value={commentText}
-                onChange={e => setCommentText(e.target.value)}
-              />
+              <Input placeholder="写评论..." value={commentText} onChange={e => setCommentText(e.target.value)} />
               <Button type="submit" size="sm" disabled={!commentText.trim()}>发送</Button>
             </form>
           )}
-          {loadingComments ? (
-            <p className="text-sm text-gray-400">加载中...</p>
-          ) : comments.length === 0 ? (
-            <p className="text-sm text-gray-400">暂无评论</p>
-          ) : (
-            <div className="space-y-3 max-h-60 overflow-y-auto">
-              {comments.map(c => (
-                <div key={c.id} className="flex gap-2">
-                  <Avatar name={c.user.nickname} src={c.user.avatar} size="sm" />
-                  <div>
-                    <p className="text-xs font-medium text-gray-900">{c.user.nickname}</p>
-                    <p className="text-sm text-gray-600">{c.content}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{timeAgo(c.createdAt)}</p>
+          {loadingComments ? <p className="text-sm text-gray-400">加载中...</p>
+            : comments.length === 0 ? <p className="text-sm text-gray-400">暂无评论</p>
+            : <div className="space-y-3 max-h-60 overflow-y-auto">
+                {comments.map(c => (
+                  <div key={c.id} className="flex gap-2">
+                    <Avatar name={c.user.nickname} src={c.user.avatar} size="sm" />
+                    <div>
+                      <p className="text-xs font-medium text-gray-900">{c.user.nickname}</p>
+                      <p className="text-sm text-gray-600">{c.content}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{timeAgo(c.createdAt)}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+          }
         </div>
       )}
     </div>
