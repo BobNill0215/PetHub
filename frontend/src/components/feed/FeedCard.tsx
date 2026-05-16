@@ -1,7 +1,8 @@
 'use client';
 
 import { Heart, MessageCircle, Bookmark } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
@@ -105,7 +106,7 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
         {feed.topics.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
             {feed.topics.map(t => (
-              <span key={t} className="text-xs text-blue-500">#{t}</span>
+              <Link key={t} href={`/topic?name=${encodeURIComponent(t)}`} className="text-xs text-blue-500 hover:text-blue-700">#{t}</Link>
             ))}
           </div>
         )}

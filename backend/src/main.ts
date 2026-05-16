@@ -9,6 +9,7 @@ import { handleCreateFeed, handleGetFeeds, handleDeleteFeed } from './handler/fe
 import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './handler/user';
 import { handleLikeFeed, handleUnlikeFeed, handleGetComments, handleCreateComment } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
+import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
 import { handleSearch } from './handler/search';
 import { handleGetNotifications, handleMarkRead, handleMarkAllRead } from './handler/notify';
 
@@ -54,6 +55,13 @@ app.delete('/api/v1/feeds/:id/like', authRequired, handleUnlikeFeed);
 // Comments
 app.get('/api/v1/feeds/:id/comments', handleGetComments);
 app.post('/api/v1/feeds/:id/comments', authRequired, handleCreateComment);
+
+// Follow
+app.post('/api/v1/users/:id/follow', authRequired, handleFollow);
+app.delete('/api/v1/users/:id/follow', authRequired, handleUnfollow);
+app.get('/api/v1/users/:id/followers', handleGetFollowers);
+app.get('/api/v1/users/:id/following', handleGetFollowing);
+app.get('/api/v1/feeds/following', authRequired, handleGetFollowingFeed);
 
 // Search
 app.get('/api/v1/search', handleSearch);
