@@ -21,6 +21,8 @@ export default function ProfilePage() {
   const [feeds, setFeeds] = useState<Feed[]>([]);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [points, setPoints] = useState(0);
+  const [stats, setStats] = useState<any>({});
   const [tab, setTab] = useState<'feeds' | 'pets'>('feeds');
 
   useEffect(() => {
@@ -28,7 +30,8 @@ export default function ProfilePage() {
     setForm({ nickname: user.nickname, bio: user.bio || '', city: user.city || '', avatar: user.avatar || '' });
     apiGet<Pet[]>('/pets').then(r => setPets(r.data)).catch(() => {});
     apiGet<{ data: Feed[] }>('/feeds').then(r => setFeeds(r.data.data)).catch(() => {});
-    apiGet<any>(`/users/${user.id}`).then(r => { setFollowerCount(r.data.followerCount || 0); setFollowingCount(r.data.followingCount || 0); }).catch(() => {});
+    apiGet<any>(`/users/${user.id}`).then(r => { setFollowerCount(r.data.followerCount || 0); setFollowingCount(r.data.followingCount || 0); setPoints(r.data.points || 0); }).catch(() => {});
+    apiGet<any>(`/users/${user.id}/stats`).then(r => setStats(r.data)).catch(() => {});
   }, [user]);
 
   const handleSave = async () => {
@@ -91,6 +94,11 @@ export default function ProfilePage() {
           <Link href={`/user/${user.id}/following`} className="hover:text-blue-600"><strong className="text-gray-900">{followingCount}</strong> 关注</Link>
           <Link href={`/user/${user.id}/followers`} className="hover:text-blue-600"><strong className="text-gray-900">{followerCount}</strong> 粉丝</Link>
           <Link href="/settings" className="text-blue-600 hover:underline ml-auto">设置</Link>
+        </div>
+        <div className="mt-3 flex gap-4 text-xs text-gray-400">
+          <span>⭐ {points} 积分</span>
+          <span>❤️ 获赞 {stats.likeCount || 0}</span>
+          <span>💬 评论 {stats.commentCount || 0}</span>
         </div>
       </div>
 

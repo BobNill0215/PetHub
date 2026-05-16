@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { success, fail } from '../pkg/response';
 import { createNotification } from '../lib/notify';
+import { addPoints } from './stats';
 
 export async function handleFollow(req: Request, res: Response) {
   try {
@@ -17,6 +18,7 @@ export async function handleFollow(req: Request, res: Response) {
 
     await prisma.follow.create({ data: { followerId, followeeId } });
     await prisma.user.update({ where: { id: followerId }, data: { followCount: { increment: 1 } } });
+    await addPoints(followerId, 2);
     await prisma.user.update({ where: { id: followeeId }, data: { fanCount: { increment: 1 } } });
 
     const actor = await prisma.user.findUnique({ where: { id: followerId } });

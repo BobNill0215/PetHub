@@ -125,8 +125,12 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
             className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-500">
             <MessageCircle className="h-4 w-4" />{commentCount}
           </button>
-          <button onClick={async () => { try { await apiPost(`/feeds/${feed.id}/share`); } catch { /* ignore */ } }}
-            className="flex items-center gap-1 text-sm text-gray-500 hover:text-green-500">
+          <button onClick={async () => {
+            try {
+              await apiPost(`/feeds/${feed.id}/share`);
+              await navigator.clipboard.writeText(window.location.origin + '/post/' + feed.id);
+            } catch { /* ignore */ }
+          }} className="flex items-center gap-1 text-sm text-gray-500 hover:text-green-500">
             <Repeat2 className="h-4 w-4" />{feed.shareCount || 0}
           </button>
         </div>

@@ -11,6 +11,7 @@ import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './ha
 import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, handleCreateComment, handleBookmarkFeed, handleUnbookmarkFeed, handleGetBookmarks, handleReportFeed, handleEditFeed, handleShareFeed } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
+import { handleGetUserStats, handleGetPoints, handleGetNotifSettings, handleUpdateNotifSettings } from './handler/stats';
 import { handleCreateConversation, handleGetConversations, handleSendMessage, handleGetMessages } from './handler/message';
 import { upload, handleUpload, handleUploadMultiple } from './handler/upload';
 import { handleSearch } from './handler/search';
@@ -93,6 +94,14 @@ app.post('/api/v1/conversations/users/:userId', authRequired, handleCreateConver
 app.get('/api/v1/conversations', authRequired, handleGetConversations);
 app.post('/api/v1/conversations/:id/messages', authRequired, handleSendMessage);
 app.get('/api/v1/conversations/:id/messages', authRequired, handleGetMessages);
+
+// Stats & Points
+app.get('/api/v1/users/:id/stats', handleGetUserStats);
+app.get('/api/v1/users/me/points', authRequired, handleGetPoints);
+
+// Notification Settings
+app.get('/api/v1/settings/notifications', authRequired, handleGetNotifSettings);
+app.put('/api/v1/settings/notifications', authRequired, handleUpdateNotifSettings);
 
 // Upload
 app.post('/api/v1/upload', authRequired, upload.single('file'), handleUpload);

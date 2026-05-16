@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { success, fail } from '../pkg/response';
+import { addPoints } from './stats';
 
 const linkItemSchema = z.object({
   title: z.string().min(1).max(100),
@@ -39,6 +40,7 @@ export async function handleCreateFeed(req: Request, res: Response) {
       where: { id: req.user!.userId },
       data: { feedCount: { increment: 1 } },
     });
+    await addPoints(req.user!.userId, 10);
 
     return success(res, feed, 201);
   } catch (err) {

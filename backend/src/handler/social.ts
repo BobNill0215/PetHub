@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { success, fail } from '../pkg/response';
 import { createNotification } from '../lib/notify';
+import { addPoints } from './stats';
 
 // ── Likes ──
 
@@ -15,9 +16,13 @@ export async function handleLikeFeed(req: Request, res: Response) {
 
     await prisma.feedLike.create({ data: { feedId, userId } });
     await prisma.feed.update({ where: { id: feedId }, data: { likeCount: { increment: 1 } } });
+    await addPoints(userId, 2);
 
     const feed = await prisma.feed.findUnique({ where: { id: feedId } });
-    if (feed) await createNotification({ userId: Number(feed.userId), type: 'like', actorId: userId, targetType: 'feed', targetId: feedId, content: '赞了你的帖子' });
+    if (feed) {
+      const setting = await prisma.notificationSetting.findUnique({ where: { userId: Number(feed.userId) } });
+      if (!setting || setting.onLike) await createNotification({ userId: Number(feed.userId), type: 'like', actorId: userId, targetType: 'feed', targetId: feedId, content: '赞了你的帖子' });
+    }
     return success(res, null);
   } catch { return fail(res, '点赞失败'); }
 }
@@ -71,8 +76,12 @@ export async function handleCreateComment(req: Request, res: Response) {
       include: { user: { select: { id: true, nickname: true, avatar: true } } },
     });
     await prisma.feed.update({ where: { id: feedId }, data: { commentCount: { increment: 1 } } });
+    await addPoints(req.user!.userId, 3);
     const feed = await prisma.feed.findUnique({ where: { id: feedId } });
-    if (feed) await createNotification({ userId: Number(feed.userId), type: 'comment', actorId: req.user!.userId, targetType: 'feed', targetId: feedId, content: '评论了你的帖子' });
+    if (feed) {
+      const setting = await prisma.notificationSetting.findUnique({ where: { userId: Number(feed.userId) } });
+      if (!setting || setting.onComment) await createNotification({ userId: Number(feed.userId), type: 'comment', actorId: req.user!.userId, targetType: 'feed', targetId: feedId, content: '评论了你的帖子' });
+    }
     return success(res, comment, 201);
   } catch (err) {
     if (err instanceof z.ZodError) return fail(res, err.errors[0].message);
