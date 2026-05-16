@@ -65,7 +65,7 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20">
         <div className="mx-auto max-w-6xl px-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-6xl">
             记录宠物点滴
             <span className="block text-blue-600 mt-2">分享有宠生活</span>
           </h1>
@@ -78,7 +78,7 @@ export default function HomePage() {
           </div>
 
           {/* Stats */}
-          <div className="mt-16 grid grid-cols-2 gap-6 sm:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6">
             {stats.map(s => (
               <div key={s.label} className="rounded-xl bg-white/60 p-4 backdrop-blur">
                 <p className="text-2xl font-bold text-blue-600">{s.value}</p>
