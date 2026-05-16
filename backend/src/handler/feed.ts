@@ -49,10 +49,15 @@ export async function handleGetFeeds(req: Request, res: Response) {
     const page = Math.max(1, parseInt(String(req.query.page)) || 1);
     const pageSize = Math.min(20, Math.max(1, parseInt(String(req.query.pageSize)) || 10));
     const currentUserId = req.user?.userId;
+    const sort = String(req.query.sort || 'new');
+
+    const orderBy: any = sort === 'hot'
+      ? [{ likeCount: 'desc' }, { commentCount: 'desc' }, { createdAt: 'desc' }]
+      : { createdAt: 'desc' };
 
     const [feeds, total] = await Promise.all([
       prisma.feed.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
@@ -81,6 +86,31 @@ export async function handleGetFeeds(req: Request, res: Response) {
     return success(res, { data, total, page, page_size: pageSize });
   } catch {
     return fail(res, '获取动态失败');
+  }
+}
+
+export async function handleGetFeedById(req: Request, res: Response) {
+  try {
+    const feedId = parseInt(String(req.params.id));
+    const feed = await prisma.feed.findUnique({
+      where: { id: feedId },
+      include: {
+        user: { select: { id: true, uuid: true, nickname: true, avatar: true, city: true } },
+      },
+    });
+    if (!feed) return fail(res, '帖子不存在', 40401, 404);
+
+    let isLiked = false;
+    if (req.user?.userId) {
+      const like = await prisma.feedLike.findUnique({
+        where: { feedId_userId: { feedId, userId: req.user.userId } },
+      });
+      isLiked = !!like;
+    }
+
+    return success(res, { ...feed, isLiked });
+  } catch {
+    return fail(res, '获取帖子失败');
   }
 }
 

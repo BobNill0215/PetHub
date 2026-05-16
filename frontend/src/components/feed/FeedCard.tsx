@@ -69,22 +69,22 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
 
   return (
     <div className="rounded-xl border bg-white shadow-sm">
-      <div className="flex items-center gap-3 p-4">
+      <Link href={`/post/${feed.id}`} className="flex items-center gap-3 p-4 hover:bg-gray-50">
         <Avatar name={feed.user.nickname} src={feed.user.avatar} />
         <div>
           <p className="text-sm font-medium text-gray-900">{feed.user.nickname}</p>
           <p className="text-xs text-gray-500">{feed.user.city && `${feed.user.city} · `}{timeAgo(feed.createdAt)}</p>
         </div>
-      </div>
+      </Link>
 
       {feed.images.length > 0 && (
-        <div className="aspect-[3/2] overflow-hidden bg-gray-100">
+        <Link href={`/post/${feed.id}`} className="aspect-[3/2] overflow-hidden bg-gray-100 block">
           <img src={feed.images[0]} alt="" className="h-full w-full object-cover" />
-        </div>
+        </Link>
       )}
 
       <div className="p-4">
-        <p className="text-sm text-gray-800 whitespace-pre-wrap">{feed.content}</p>
+        <Link href={`/post/${feed.id}`} className="text-sm text-gray-800 whitespace-pre-wrap block hover:text-gray-600">{feed.content}</Link>
 
         {feed.topics.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">

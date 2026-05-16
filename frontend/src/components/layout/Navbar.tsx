@@ -71,7 +71,7 @@ export function Navbar() {
         </form>
 
         <div className="hidden items-center gap-5 md:flex">
-          <Link href="/feed" className="text-sm font-medium text-gray-600 hover:text-gray-900">动态</Link>
+          <Link href="/feed" className="text-sm font-medium text-gray-600 hover:text-gray-900">论坛</Link>
           <Link href="/marketplace" className="text-sm font-medium text-gray-600 hover:text-gray-900">好物</Link>
         </div>
 
