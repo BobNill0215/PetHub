@@ -55,6 +55,7 @@ app.get('/api/v1/feeds/:id/related', handleGetRelatedFeeds);
 app.patch('/api/v1/feeds/:id/images', authRequired, handleUpdateFeedImages);
 app.get('/api/v1/categories', handleGetCategories);
 app.get('/api/v1/feeds/featured', handleGetFeatured);
+app.get('/api/v1/feeds/trending', handleGetTrending);
 app.get('/api/v1/feeds/following', authRequired, handleGetFollowingFeed);
 app.get('/api/v1/feeds/:id', optionalAuth, handleGetFeedById);
 app.post('/api/v1/feeds/:id/pin', authRequired, handleTogglePin);
@@ -76,7 +77,6 @@ app.delete('/api/v1/feeds/:id/bookmark', authRequired, handleUnbookmarkFeed);
 app.get('/api/v1/bookmarks', authRequired, handleGetBookmarks);
 
 // Reports
-app.get('/api/v1/feeds/trending', handleGetTrending);
 app.post('/api/v1/feeds/:id/report', authRequired, handleReportFeed);
 
 // Share
