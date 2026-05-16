@@ -3,6 +3,7 @@
 import { Heart, MessageCircle, Bookmark, Repeat2, Eye, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
+import { ImageGallery } from '@/components/common/ImageGallery';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
@@ -48,6 +49,7 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
   const [commentText, setCommentText] = useState('');
   const [commentCount, setCommentCount] = useState(feed.commentCount);
   const [loadingComments, setLoadingComments] = useState(false);
+  const [galleryIdx, setGalleryIdx] = useState<number | null>(null);
 
   const toggleLike = async () => {
     try {
@@ -88,10 +90,16 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
       </Link>
 
       {feed.images.length > 0 && (
-        <Link href={`/post/${feed.id}`} className="aspect-[3/2] overflow-hidden bg-gray-100 block">
-          <img src={feed.images[0]} alt="" className="h-full w-full object-cover" />
-        </Link>
+        <div className="flex gap-1 overflow-x-auto bg-gray-100 cursor-pointer" onClick={() => setGalleryIdx(0)}>
+          {feed.images.slice(0, 3).map((url, i) => (
+            <div key={i} className="shrink-0 w-full aspect-[3/2] first:block">
+              <img src={url} alt="" className="h-full w-full object-cover" />
+            </div>
+          ))}
+          {feed.images.length > 3 && <div className="shrink-0 w-full aspect-[3/2] flex items-center justify-center bg-gray-200 text-gray-500 text-sm">+{feed.images.length - 3}</div>}
+        </div>
       )}
+      {galleryIdx !== null && <ImageGallery images={feed.images} index={galleryIdx} onClose={() => setGalleryIdx(null)} />}
 
       <div className="p-4">
         <Link href={`/post/${feed.id}`} className="text-sm text-gray-800 whitespace-pre-wrap block hover:text-gray-600">{feed.content}</Link>

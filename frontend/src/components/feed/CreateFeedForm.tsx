@@ -12,6 +12,7 @@ export function CreateFeedForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [content, setContent] = useState('');
+  const [isDraft, setIsDraft] = useState(false);
   const [category, setCategory] = useState('general');
   const [images, setImages] = useState<string[]>([]);
   const [topics, setTopics] = useState('');
@@ -35,6 +36,7 @@ export function CreateFeedForm() {
       await apiPost('/feeds', {
         content,
         category,
+        isDraft,
         images,
         links: validLinks.length > 0 ? validLinks : undefined,
         topics: topics ? topics.split(/[,，]/).map(s => s.trim()).filter(Boolean) : [],
@@ -97,7 +99,10 @@ export function CreateFeedForm() {
 
       {error && <p className="text-sm text-red-500">{error}</p>}
       <div className="flex gap-3">
-        <Button type="submit" loading={loading}>发布帖子</Button>
+        <Button type="submit" loading={loading}>{isDraft ? '保存草稿' : '发布帖子'}</Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => { setIsDraft(!isDraft); }} className="text-xs">
+          {isDraft ? '📝 改为发布' : '💾 存为草稿'}
+        </Button>
         <Button type="button" variant="secondary" onClick={() => router.back()}>取消</Button>
       </div>
     </form>

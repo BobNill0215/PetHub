@@ -145,6 +145,7 @@ model Feed {
   viewCount     Int      @default(0) @map("view_count")
   isPinned     Boolean   @default(false) @map("is_pinned")
   isFeatured   Boolean   @default(false) @map("is_featured")
+  isDraft     Boolean   @default(false) @map("is_draft")
   status       Int       @default(1)
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")

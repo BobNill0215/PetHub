@@ -97,8 +97,9 @@ export default function ProfilePage() {
         </div>
         <div className="mt-3 flex gap-4 text-xs text-gray-400">
           <span>⭐ {points} 积分</span>
-          <span>❤️ 获赞 {stats.likeCount || 0}</span>
+          <span>❤️ 获赞 {stats.totalLikes || 0}</span>
           <span>💬 评论 {stats.commentCount || 0}</span>
+          <span>👀 浏览 {(stats.totalLikes || 0) * 3 + (stats.feedCount || 0) * 10}</span>
         </div>
       </div>
 

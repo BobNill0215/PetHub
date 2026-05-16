@@ -8,6 +8,7 @@ const linkItemSchema = z.object({
   title: z.string().min(1).max(100),
   url: z.string().url('链接格式不正确'),
 });
+
 const CATEGORIES = ['cat', 'dog', 'smallpet', 'aquatic', 'reptile', 'insect', 'general'] as const;
 
 const createFeedSchema = z.object({
@@ -18,6 +19,7 @@ const createFeedSchema = z.object({
   links: z.array(linkItemSchema).max(5).optional(),
   topics: z.array(z.string()).max(10).optional(),
   petIds: z.array(z.number()).optional(),
+  isDraft: z.boolean().optional(),
 });
 
 export async function handleCreateFeed(req: Request, res: Response) {
@@ -36,11 +38,13 @@ export async function handleCreateFeed(req: Request, res: Response) {
       },
     });
 
-    await prisma.user.update({
-      where: { id: req.user!.userId },
-      data: { feedCount: { increment: 1 } },
-    });
-    await addPoints(req.user!.userId, 10);
+    if (!body.isDraft) {
+      await prisma.user.update({
+        where: { id: req.user!.userId },
+        data: { feedCount: { increment: 1 } },
+      });
+      await addPoints(req.user!.userId, 10);
+    }
 
     return success(res, feed, 201);
   } catch (err) {
@@ -57,7 +61,7 @@ export async function handleGetFeeds(req: Request, res: Response) {
     const currentUserId = req.user?.userId;
     const sort = String(req.query.sort || 'new');
     const category = req.query.category as string;
-    const where: any = {};
+    const where: any = { isDraft: false };
     if (category && CATEGORIES.includes(category as any)) where.category = category;
 
     const orderBy: any = sort === 'hot'
@@ -220,6 +224,16 @@ export async function handleGetRelatedFeeds(req: Request, res: Response) {
 
     return success(res, related);
   } catch { return fail(res, '获取推荐失败'); }
+}
+
+export async function handleGetDrafts(req: Request, res: Response) {
+  try {
+    const drafts = await prisma.feed.findMany({
+      where: { userId: req.user!.userId, isDraft: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    return success(res, drafts);
+  } catch { return fail(res, '获取草稿失败'); }
 }
 
 export async function handleGetTrending(req: Request, res: Response) {
