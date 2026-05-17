@@ -14,6 +14,7 @@ import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, h
 import { handleGetUserStats, handleGetPoints, handleGetNotifSettings, handleUpdateNotifSettings } from './handler/stats';
 import { handleAdminDashboard, handleAdminUsers, handleAdminBanUser, handleAdminReports, handleAdminResolveReport } from './handler/admin';
 import { handleGetTopics } from './handler/topics';
+import { handleGetDailyTasks } from './handler/tasks';
 import { handleExportMyData } from './handler/export';
 import { handleBlockUser, handleUnblockUser, handleGetBlockedUsers } from './handler/block';
 import { handleCheckin, handleGetCheckinStatus } from './handler/checkin';
@@ -125,6 +126,9 @@ app.get('/api/v1/search', handleSearch);
 
 // Topics
 app.get('/api/v1/topics', handleGetTopics);
+
+// Daily Tasks
+app.get('/api/v1/tasks', authRequired, handleGetDailyTasks);
 
 // Export
 app.get('/api/v1/export/my-data', authRequired, handleExportMyData);
