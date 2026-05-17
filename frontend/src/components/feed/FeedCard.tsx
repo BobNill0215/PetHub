@@ -78,7 +78,7 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
   };
 
   return (
-    <div className="rounded-xl border bg-white shadow-sm">
+    <div className="rounded-xl border bg-white shadow-sm transition-all hover:shadow-md">
       <Link href={`/post/${feed.id}`} className="flex items-center gap-3 p-4 hover:bg-gray-50">
         <Avatar name={feed.user.nickname} src={feed.user.avatar} />
         <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
         <div className="flex gap-1 overflow-x-auto bg-gray-100 cursor-pointer" onClick={() => setGalleryIdx(0)}>
           {feed.images.slice(0, 3).map((url, i) => (
             <div key={i} className="shrink-0 w-full aspect-[3/2] first:block">
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <img src={url} alt="" loading="lazy" className="h-full w-full object-cover" />
             </div>
           ))}
           {feed.images.length > 3 && <div className="shrink-0 w-full aspect-[3/2] flex items-center justify-center bg-gray-200 text-gray-500 text-sm">+{feed.images.length - 3}</div>}

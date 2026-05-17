@@ -22,6 +22,7 @@ export function SearchContent() {
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState(q);
   const [tab, setTab] = useState<'all' | 'feeds' | 'products' | 'users'>('all');
+  const [sortBy, setSortBy] = useState<'relevance' | 'newest'>('relevance');
 
   const doSearch = async (query: string, type: string) => {
     if (!query.trim()) return;
