@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+import { ToastProvider } from '@/components/common/Toast';
 import { Navbar } from '@/components/layout/Navbar';
 import { MobileNav } from '@/components/layout/MobileNav';
 
@@ -25,9 +26,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${inter.className} pb-16 md:pb-0 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100`}>
         <Providers>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <MobileNav />
+          <ToastProvider>
+            <Navbar />
+            <main className="min-h-screen">{children}</main>
+            <MobileNav />
+          </ToastProvider>
         </Providers>
       </body>
     </html>
