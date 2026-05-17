@@ -93,6 +93,8 @@ model User {
   feedLikes            FeedLike[]
   feedComments         FeedComment[]
   feedBookmarks        FeedBookmark[]
+  blocksGiven          UserBlock[]    @relation("blocks")
+  blocksReceived       UserBlock[]    @relation("blocked")
   conversations1       Conversation[] @relation("conv_user1")
   conversations2       Conversation[] @relation("conv_user2")
   sentMessages         Message[]
@@ -194,6 +196,19 @@ model FeedComment {
 
   @@index([feedId])
   @@map("feed_comments")
+}
+
+model UserBlock {
+  id        BigInt   @id @default(autoincrement()) @map("id")
+  blockerId BigInt   @map("blocker_id")
+  blockedId BigInt   @map("blocked_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  blocker User @relation("blocks", fields: [blockerId], references: [id])
+  blocked User @relation("blocked", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId])
+  @@map("user_blocks")
 }
 
 model FeedBookmark {

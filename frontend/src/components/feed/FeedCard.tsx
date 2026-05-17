@@ -143,14 +143,18 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
           <button className="flex items-center gap-1 text-sm text-gray-400" title="浏览">
             <Eye className="h-4 w-4" />{feed.viewCount || 0}
           </button>
-          <button onClick={async () => {
-            try {
-              await apiPost(`/feeds/${feed.id}/share`);
-              await navigator.clipboard.writeText(window.location.origin + '/post/' + feed.id);
-            } catch { /* ignore */ }
-          }} className="flex items-center gap-1 text-sm text-gray-500 hover:text-green-500">
-            <Repeat2 className="h-4 w-4" />{feed.shareCount || 0}
-          </button>
+          <div className="relative group/share">
+            <button onClick={async () => {
+              try { await apiPost(`/feeds/${feed.id}/share`); await navigator.clipboard.writeText(window.location.origin + '/post/' + feed.id); } catch {}
+            }} className="flex items-center gap-1 text-sm text-gray-500 hover:text-green-500">
+              <Repeat2 className="h-4 w-4" />{feed.shareCount || 0}
+            </button>
+            <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover/share:flex gap-1 bg-gray-800 text-white text-xs rounded-lg px-2 py-1.5">
+              <button onClick={() => { const u = window.location.origin + '/post/' + feed.id; window.open('https://service.weibo.com/share/share.php?title=' + encodeURIComponent(feed.content) + '&url=' + encodeURIComponent(u)); }} className="hover:text-yellow-300">微博</button>
+              <span className="text-gray-500">|</span>
+              <button onClick={() => { const u = window.location.origin + '/post/' + feed.id; navigator.clipboard.writeText(u); }} className="hover:text-blue-300">复制链接</button>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -14,6 +14,8 @@ import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, h
 import { handleGetUserStats, handleGetPoints, handleGetNotifSettings, handleUpdateNotifSettings } from './handler/stats';
 import { handleAdminDashboard, handleAdminUsers, handleAdminBanUser, handleAdminReports, handleAdminResolveReport } from './handler/admin';
 import { handleGetTopics } from './handler/topics';
+import { handleExportMyData } from './handler/export';
+import { handleBlockUser, handleUnblockUser, handleGetBlockedUsers } from './handler/block';
 import { handleCheckin, handleGetCheckinStatus } from './handler/checkin';
 import { handleGetReports } from './handler/reports';
 import { handleCreateConversation, handleGetConversations, handleSendMessage, handleGetMessages } from './handler/message';
@@ -120,6 +122,14 @@ app.get('/api/v1/search', handleSearch);
 
 // Topics
 app.get('/api/v1/topics', handleGetTopics);
+
+// Export
+app.get('/api/v1/export/my-data', authRequired, handleExportMyData);
+
+// Block
+app.post('/api/v1/users/:id/block', authRequired, handleBlockUser);
+app.delete('/api/v1/users/:id/block', authRequired, handleUnblockUser);
+app.get('/api/v1/users/me/blocks', authRequired, handleGetBlockedUsers);
 
 // Check-in
 app.post('/api/v1/checkin', authRequired, handleCheckin);

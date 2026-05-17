@@ -2,10 +2,10 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'light' | 'dark' | 'blue' | 'purple';
+export type Theme = 'light' | 'dark' | 'blue' | 'purple' | 'auto';
 
-const THEMES: Theme[] = ['light', 'dark', 'blue', 'purple'];
-const THEME_LABELS: Record<Theme, string> = { light: '☀️ 亮色', dark: '🌙 暗色', blue: '🔵 蓝色', purple: '🟣 紫色' };
+const THEMES: Theme[] = ['auto', 'light', 'dark', 'blue', 'purple'];
+const THEME_LABELS: Record<Theme, string> = { auto: '🤖 跟随系统', light: '☀️ 亮色', dark: '🌙 暗色', blue: '🔵 蓝色', purple: '🟣 紫色' };
 
 const ThemeContext = createContext<{ theme: Theme; themes: typeof THEMES; labels: typeof THEME_LABELS; setTheme: (t: Theme) => void }>({
   theme: 'light', themes: THEMES, labels: THEME_LABELS, setTheme: () => {},
@@ -17,19 +17,31 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const stored = localStorage.getItem('theme') as Theme | null;
-    const t = stored || 'light';
+    const t = stored || 'auto';
     setThemeState(t);
     applyTheme(t);
+
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = () => { if (localStorage.getItem('theme') === 'auto' || !localStorage.getItem('theme')) applyTheme('auto'); };
+    mq.addEventListener('change', handler);
+
     setMounted(true);
+    return () => mq.removeEventListener('change', handler);
   }, []);
 
   const applyTheme = (t: Theme) => {
     const root = document.documentElement;
     root.className = root.className.replace(/dark|theme-blue|theme-purple/g, '').trim();
-    if (t === 'dark') root.classList.add('dark');
-    if (t === 'blue') root.classList.add('theme-blue');
-    if (t === 'purple') root.classList.add('theme-purple');
-    localStorage.setItem('theme', t);
+    if (t === 'auto') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) root.classList.add('dark');
+      localStorage.setItem('theme', 'auto');
+    } else {
+      if (t === 'dark') root.classList.add('dark');
+      if (t === 'blue') root.classList.add('theme-blue');
+      if (t === 'purple') root.classList.add('theme-purple');
+      localStorage.setItem('theme', t);
+    }
   };
 
   const setTheme = (t: Theme) => { setThemeState(t); applyTheme(t); };
