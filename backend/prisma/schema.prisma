@@ -203,6 +203,18 @@ model FeedBookmark {
   @@map("feed_bookmarks")
 }
 
+model DailyCheckin {
+  id        BigInt   @id @default(autoincrement()) @map("id")
+  userId    BigInt   @map("user_id")
+  date      DateTime @map("date")
+  streak    Int      @default(1)
+  points    Int      @default(5)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, date])
+  @@map("daily_checkins")
+}
+
 model Report {
   id         BigInt   @id @default(autoincrement()) @map("id")
   reporterId BigInt   @map("reporter_id")

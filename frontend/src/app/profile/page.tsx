@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/auth';
-import { apiGet, apiPut } from '@/lib/api';
+import { apiGet, apiPut, apiPost } from '@/lib/api';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
@@ -23,6 +23,7 @@ export default function ProfilePage() {
   const [followingCount, setFollowingCount] = useState(0);
   const [points, setPoints] = useState(0);
   const [stats, setStats] = useState<any>({});
+  const [checkin, setCheckin] = useState<any>({});
   const [tab, setTab] = useState<'feeds' | 'pets'>('feeds');
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function ProfilePage() {
     apiGet<{ data: Feed[] }>('/feeds').then(r => setFeeds(r.data.data)).catch(() => {});
     apiGet<any>(`/users/${user.id}`).then(r => { setFollowerCount(r.data.followerCount || 0); setFollowingCount(r.data.followingCount || 0); setPoints(r.data.points || 0); }).catch(() => {});
     apiGet<any>(`/users/${user.id}/stats`).then(r => setStats(r.data)).catch(() => {});
+    apiGet<any>('/checkin').then(r => setCheckin(r.data)).catch(() => {});
   }, [user]);
 
   const handleSave = async () => {
@@ -95,7 +97,12 @@ export default function ProfilePage() {
           <Link href={`/user/${user.id}/followers`} className="hover:text-blue-600"><strong className="text-gray-900">{followerCount}</strong> 粉丝</Link>
           <Link href="/settings" className="text-blue-600 hover:underline ml-auto">设置</Link>
         </div>
-        <div className="mt-3 flex gap-4 text-xs text-gray-400">
+        <div className="mt-3 flex gap-4 text-xs text-gray-400 items-center">
+          <button onClick={async () => {
+            try { const r = await apiPost<any>('/checkin'); setCheckin(r.data || { checkedIn: true }); } catch {}
+          }} className={`px-3 py-1 rounded-full ${checkin.checkedIn ? 'bg-green-100 text-green-600' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}>
+            {checkin.checkedIn ? `✅ 已签到 ${checkin.streak}天` : '📅 签到'}
+          </button>
           <span>⭐ {points} 积分</span>
           <span>❤️ 获赞 {stats.totalLikes || 0}</span>
           <span>💬 评论 {stats.commentCount || 0}</span>

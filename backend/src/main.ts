@@ -12,6 +12,9 @@ import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, ha
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
 import { handleGetUserStats, handleGetPoints, handleGetNotifSettings, handleUpdateNotifSettings } from './handler/stats';
+import { handleGetTopics } from './handler/topics';
+import { handleCheckin, handleGetCheckinStatus } from './handler/checkin';
+import { handleGetReports } from './handler/reports';
 import { handleCreateConversation, handleGetConversations, handleSendMessage, handleGetMessages } from './handler/message';
 import { upload, handleUpload, handleUploadMultiple } from './handler/upload';
 import { handleSearch } from './handler/search';
@@ -113,6 +116,16 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Search
 app.get('/api/v1/search', handleSearch);
+
+// Topics
+app.get('/api/v1/topics', handleGetTopics);
+
+// Check-in
+app.post('/api/v1/checkin', authRequired, handleCheckin);
+app.get('/api/v1/checkin', authRequired, handleGetCheckinStatus);
+
+// Reports
+app.get('/api/v1/reports', authRequired, handleGetReports);
 
 // Notifications
 app.get('/api/v1/notifications', authRequired, handleGetNotifications);

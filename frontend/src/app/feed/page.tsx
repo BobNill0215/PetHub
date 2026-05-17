@@ -10,14 +10,15 @@ import { useAuthStore } from '@/stores/auth';
 
 function TrendingSidebar() {
   const [trending, setTrending] = useState<any>(null);
+  const [topics, setTopics] = useState<any[]>([]);
   useEffect(() => {
     apiGet<any>('/feeds/trending').then(r => setTrending(r.data)).catch(() => {});
+    apiGet<any>('/topics').then(r => setTopics(r.data || [])).catch(() => {});
   }, []);
-  if (!trending) return null;
   return (
     <div className="hidden lg:block w-72 shrink-0">
       <div className="sticky top-20 space-y-4">
-        <div className="rounded-xl border bg-white p-4">
+        {trending && (<div className="rounded-xl border bg-white p-4">
           <h3 className="text-sm font-semibold text-gray-900 mb-3">🔥 热门推荐</h3>
           <div className="space-y-2">
             {trending.byViews?.slice(0, 5).map((f: any, i: number) => (
@@ -27,18 +28,21 @@ function TrendingSidebar() {
               </Link>
             ))}
           </div>
-        </div>
-        <div className="rounded-xl border bg-white p-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">💬 最多评论</h3>
-          <div className="space-y-2">
-            {trending.byComments?.slice(0, 5).map((f: any, i: number) => (
-              <Link key={f.id} href={`/post/${f.id}`} className="flex gap-2 items-start text-sm hover:text-blue-600">
-                <span className="text-xs font-bold text-gray-300 w-4 shrink-0">{i + 1}</span>
-                <span className="truncate">{f.content}</span>
+        </div>)}
+        {topics.length > 0 && (<div className="rounded-xl border bg-white p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-900">🏷️ 热门话题</h3>
+            <Link href="/topics" className="text-xs text-blue-600 hover:underline">更多</Link>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {topics.slice(0, 8).map(t => (
+              <Link key={t.name} href={`/topic?name=${encodeURIComponent(t.name)}`}
+                className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full hover:bg-blue-50 hover:text-blue-600">
+                {t.name}
               </Link>
             ))}
           </div>
-        </div>
+        </div>)}
       </div>
     </div>
   );
