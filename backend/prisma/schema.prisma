@@ -146,6 +146,8 @@ model Feed {
   isPinned     Boolean   @default(false) @map("is_pinned")
   isFeatured   Boolean   @default(false) @map("is_featured")
   isDraft     Boolean   @default(false) @map("is_draft")
+  eventDate   DateTime? @map("event_date")
+  eventLocation String? @map("event_location") @db.VarChar(200)
   status       Int       @default(1)
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
@@ -278,6 +280,7 @@ model Message {
   conversationId BigInt       @map("conversation_id")
   senderId       BigInt       @map("sender_id")
   content        String       @db.VarChar(2000)
+  isRead         Boolean      @default(false) @map("is_read")
   messageType    String       @default("text") @map("message_type") @db.VarChar(20)
   createdAt      DateTime     @default(now()) @map("created_at")
 

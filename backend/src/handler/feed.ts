@@ -20,6 +20,8 @@ const createFeedSchema = z.object({
   topics: z.array(z.string()).max(10).optional(),
   petIds: z.array(z.number()).optional(),
   isDraft: z.boolean().optional(),
+  eventDate: z.string().optional(),
+  eventLocation: z.string().max(200).optional(),
 });
 
 export async function handleCreateFeed(req: Request, res: Response) {
@@ -32,6 +34,8 @@ export async function handleCreateFeed(req: Request, res: Response) {
         images: body.images || [],
         videoUrl: body.videoUrl,
         links: body.links || [],
+        eventDate: body.eventDate ? new Date(body.eventDate) : undefined,
+        eventLocation: body.eventLocation,
         topics: body.topics || [],
         petIds: body.petIds || [],
         userId: req.user!.userId,

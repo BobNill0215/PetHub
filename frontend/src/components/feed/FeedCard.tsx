@@ -50,6 +50,8 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
   const [commentCount, setCommentCount] = useState(feed.commentCount);
   const [loadingComments, setLoadingComments] = useState(false);
   const [galleryIdx, setGalleryIdx] = useState<number | null>(null);
+  const [showLikes, setShowLikes] = useState(false);
+  const [likedUsers, setLikedUsers] = useState<any[]>([]);
 
   const toggleLike = async () => {
     try {
@@ -128,7 +130,11 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
 
         <div className="mt-4 flex items-center gap-5">
           <button onClick={toggleLike} className={`flex items-center gap-1 text-sm ${liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}>
-            <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />{likeCount}
+            <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
+          </button>
+          <button onClick={async (e) => { e.stopPropagation(); try { const r = await apiGet<any[]>('/feeds/' + feed.id + '/likes'); setLikedUsers(r.data); setShowLikes(true); } catch {} }}
+            className="text-xs text-gray-400 hover:text-gray-600 -ml-2">
+            {likeCount} 赞
           </button>
           <button onClick={() => { if (!showComments) loadComments(); setShowComments(!showComments); }}
             className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-500">
@@ -173,6 +179,25 @@ export function FeedCard({ feed }: { feed: FeedItem }) {
           }
         </div>
       )}
+
+      {showLikes && (
+        <div className="border-t px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-gray-500">👍 点赞</span>
+            <button onClick={() => setShowLikes(false)} className="text-xs text-gray-400">关闭</button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {likedUsers.map((u: any) => (
+              <Link key={u.id} href={`/user/${u.id}`}
+                className="flex items-center gap-1.5 bg-gray-50 rounded-full px-2.5 py-1 text-xs hover:bg-gray-100">
+                <Avatar name={u.nickname} src={u.avatar} size="sm" />
+                {u.nickname}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

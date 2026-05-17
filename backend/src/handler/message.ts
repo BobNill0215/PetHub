@@ -43,7 +43,15 @@ export async function handleGetConversations(req: Request, res: Response) {
         messages: { orderBy: { createdAt: 'desc' }, take: 1 },
       },
     });
-    return success(res, convs);
+
+    const result = await Promise.all(convs.map(async (c) => {
+      const unread = await prisma.message.count({
+        where: { conversationId: c.id, senderId: { not: userId }, isRead: false },
+      });
+      return { ...c, unreadCount: unread };
+    }));
+
+    return success(res, result);
   } catch {
     return fail(res, '获取会话列表失败');
   }
@@ -101,6 +109,12 @@ export async function handleGetMessages(req: Request, res: Response) {
     if (Number(conv.user1Id) !== userId && Number(conv.user2Id) !== userId) {
       return fail(res, '无权访问', 40301, 403);
     }
+
+    // Mark messages as read that weren't sent by current user
+    await prisma.message.updateMany({
+      where: { conversationId: convId, senderId: { not: userId }, isRead: false },
+      data: { isRead: true },
+    });
 
     const [messages, total] = await Promise.all([
       prisma.message.findMany({

@@ -13,6 +13,7 @@ interface Conversation {
   user1: { id: number; nickname: string; avatar?: string };
   user2: { id: number; nickname: string; avatar?: string };
   lastMsgAt: string;
+  unreadCount?: number;
   messages: { content: string; createdAt: string }[];
 }
 
@@ -68,9 +69,10 @@ export default function MessagesPage() {
                   <p className="truncate text-sm text-gray-500">{last.content}</p>
                 )}
               </div>
-              {c.lastMsgAt && (
-                <span className="text-xs text-gray-400 shrink-0">{timeAgo(c.lastMsgAt)}</span>
-              )}
+              <div className="flex flex-col items-end gap-1">
+                {c.unreadCount ? <span className="text-xs bg-blue-600 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{c.unreadCount}</span> : null}
+                {c.lastMsgAt && <span className="text-xs text-gray-400">{timeAgo(c.lastMsgAt)}</span>}
+              </div>
             </Link>
           );
         })}

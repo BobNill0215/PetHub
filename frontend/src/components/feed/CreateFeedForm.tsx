@@ -17,6 +17,8 @@ export function CreateFeedForm() {
   const [images, setImages] = useState<string[]>([]);
   const [topics, setTopics] = useState('');
   const [links, setLinks] = useState<{ title: string; url: string }[]>([{ title: '', url: '' }]);
+  const [eventDate, setEventDate] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
 
   const updateLink = (i: number, field: 'title' | 'url', value: string) => {
     const next = [...links];
@@ -37,6 +39,8 @@ export function CreateFeedForm() {
         content,
         category,
         isDraft,
+        eventDate: eventDate || undefined,
+        eventLocation: eventLocation || undefined,
         images,
         links: validLinks.length > 0 ? validLinks : undefined,
         topics: topics ? topics.split(/[,，]/).map(s => s.trim()).filter(Boolean) : [],
@@ -75,6 +79,16 @@ export function CreateFeedForm() {
       </div>
 
       <Input id="topics" label="话题标签（逗号分隔）" placeholder="猫咪日常, 萌宠" value={topics} onChange={e => setTopics(e.target.value)} />
+
+      <details className="text-sm text-gray-500">
+        <summary className="cursor-pointer hover:text-gray-700">📅 添加活动信息（可选）</summary>
+        <div className="mt-2 space-y-2">
+          <input type="datetime-local" value={eventDate} onChange={e => setEventDate(e.target.value)}
+            className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+          <input type="text" placeholder="活动地点" value={eventLocation} onChange={e => setEventLocation(e.target.value)}
+            className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+        </div>
+      </details>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">🛒 推荐商品链接（可选）</label>
