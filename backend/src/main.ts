@@ -12,6 +12,7 @@ import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, ha
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
 import { handleGetUserStats, handleGetPoints, handleGetNotifSettings, handleUpdateNotifSettings } from './handler/stats';
+import { handleAdminDashboard, handleAdminUsers, handleAdminBanUser, handleAdminReports, handleAdminResolveReport } from './handler/admin';
 import { handleGetTopics } from './handler/topics';
 import { handleCheckin, handleGetCheckinStatus } from './handler/checkin';
 import { handleGetReports } from './handler/reports';
@@ -126,6 +127,13 @@ app.get('/api/v1/checkin', authRequired, handleGetCheckinStatus);
 
 // Reports
 app.get('/api/v1/reports', authRequired, handleGetReports);
+
+// Admin
+app.get('/api/v1/admin/dashboard', handleAdminDashboard);
+app.get('/api/v1/admin/users', handleAdminUsers);
+app.post('/api/v1/admin/users/:id/ban', handleAdminBanUser);
+app.get('/api/v1/admin/reports', handleAdminReports);
+app.post('/api/v1/admin/reports/:id/resolve', handleAdminResolveReport);
 
 // Notifications
 app.get('/api/v1/notifications', authRequired, handleGetNotifications);

@@ -159,6 +159,10 @@ model Feed {
 
   @@index([userId])
   @@index([createdAt])
+  @@index([category])
+  @@index([isDraft])
+  @@index([viewCount])
+  @@index([topics])
   @@map("feeds")
 }
 

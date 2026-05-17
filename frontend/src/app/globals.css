@@ -22,6 +22,35 @@ body { @apply bg-gray-50 text-gray-900; }
   color: #f0f5ff;
 }
 
+/* Dark mode badge colors */
+.dark {
+  --color-orange-50: #2d1a00;
+  --color-orange-100: #3d2a00;
+  --color-orange-500: #fe6e00;
+  --color-orange-600: #ff8533;
+  --color-orange-700: #ff9944;
+  --color-orange-800: #ffad55;
+  --color-yellow-100: #3d2d00;
+  --color-yellow-700: #f5c542;
+  --color-green-50: #002d1a;
+  --color-green-500: #00c758;
+  --color-green-600: #00e066;
+  --color-purple-50: #1a0030;
+  --color-purple-100: #2d004d;
+  --color-purple-700: #a855f7;
+  --color-red-400: #ff6568;
+  --color-red-500: #fb2c36;
+  --color-red-600: #e40014;
+  --color-red-700: #ff3344;
+  --color-red-800: #ff5566;
+  --color-blue-100: #002d5a;
+  --color-blue-400: #54a2ff;
+  --color-blue-500: #3080ff;
+  --color-blue-600: #5599ff;
+  --color-blue-700: #77aaff;
+  --color-blue-800: #99bbff;
+}
+
 /* Blue theme — blue-tinted backgrounds, deeper blue accents */
 .theme-blue {
   --color-blue-400: #60a5fa;
