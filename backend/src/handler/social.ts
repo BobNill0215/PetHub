@@ -146,6 +146,27 @@ export async function handleReportFeed(req: Request, res: Response) {
   }
 }
 
+// ── Comment Likes ──
+
+export async function handleLikeComment(req: Request, res: Response) {
+  try {
+    const commentId = parseInt(String(req.params.id));
+    const userId = req.user!.userId;
+    const existing = await prisma.feedCommentLike.findUnique({ where: { commentId_userId: { commentId, userId } } });
+    if (existing) return fail(res, '已经赞过');
+    await prisma.feedCommentLike.create({ data: { commentId, userId } });
+    return success(res, null);
+  } catch { return fail(res, '点赞失败'); }
+}
+
+export async function handleUnlikeComment(req: Request, res: Response) {
+  try {
+    const commentId = parseInt(String(req.params.id));
+    await prisma.feedCommentLike.delete({ where: { commentId_userId: { commentId, userId: req.user!.userId } } });
+    return success(res, null);
+  } catch { return fail(res, '取消点赞失败'); }
+}
+
 // ── Share / Repost ──
 
 export async function handleShareFeed(req: Request, res: Response) {

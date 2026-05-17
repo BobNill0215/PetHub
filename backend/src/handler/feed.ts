@@ -240,6 +240,20 @@ export async function handleGetDrafts(req: Request, res: Response) {
   } catch { return fail(res, '获取草稿失败'); }
 }
 
+export async function handleGetRandomFeed(req: Request, res: Response) {
+  try {
+    const count = await prisma.feed.count({ where: { isDraft: false } });
+    const skip = Math.max(0, Math.floor(Math.random() * count) - 1);
+    const feed = await prisma.feed.findFirst({
+      where: { isDraft: false }, skip, take: 1,
+      include: { user: { select: { id: true, nickname: true, avatar: true } } },
+    });
+    if (!feed) return success(res, null);
+    const like = req.user?.userId ? await prisma.feedLike.findUnique({ where: { feedId_userId: { feedId: feed.id, userId: req.user.userId } } }) : null;
+    return success(res, { ...feed, isLiked: !!like });
+  } catch { return fail(res, '获取随机帖子失败'); }
+}
+
 export async function handleGetTrending(req: Request, res: Response) {
   try {
     const [byViews, byLikes, byComments] = await Promise.all([

@@ -92,6 +92,7 @@ model User {
   sales                Order[]    @relation("seller")
   feedLikes            FeedLike[]
   feedComments         FeedComment[]
+  commentLikes         FeedCommentLike[]
   feedBookmarks        FeedBookmark[]
   blocksGiven          UserBlock[]    @relation("blocks")
   blocksReceived       UserBlock[]    @relation("blocked")
@@ -194,8 +195,23 @@ model FeedComment {
   parent FeedComment?  @relation("CommentReply", fields: [parentId], references: [id])
   replies FeedComment[] @relation("CommentReply")
 
+  feedLikes FeedCommentLike[]
+
   @@index([feedId])
   @@map("feed_comments")
+}
+
+model FeedCommentLike {
+  id        BigInt   @id @default(autoincrement()) @map("id")
+  commentId BigInt   @map("comment_id")
+  userId    BigInt   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  comment FeedComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User        @relation(fields: [userId], references: [id])
+
+  @@unique([commentId, userId])
+  @@map("feed_comment_likes")
 }
 
 model UserBlock {

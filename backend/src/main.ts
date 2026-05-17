@@ -6,9 +6,9 @@ import { errorHandler, notFoundHandler } from './middleware/error';
 import { authRequired, optionalAuth } from './middleware/auth';
 import { handleRegister, handleLogin, handleGetProfile, handleChangePassword } from './handler/auth';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
-import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetRelatedFeeds, handleGetTrending, handleGetFeatured, handleGetDrafts, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
+import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetRelatedFeeds, handleGetRandomFeed, handleGetTrending, handleGetFeatured, handleGetDrafts, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
 import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './handler/user';
-import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, handleCreateComment, handleBookmarkFeed, handleUnbookmarkFeed, handleGetBookmarks, handleReportFeed, handleEditFeed, handleShareFeed } from './handler/social';
+import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, handleCreateComment, handleLikeComment, handleUnlikeComment, handleBookmarkFeed, handleUnbookmarkFeed, handleGetBookmarks, handleReportFeed, handleEditFeed, handleShareFeed } from './handler/social';
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
 import { handleGetUserStats, handleGetPoints, handleGetNotifSettings, handleUpdateNotifSettings } from './handler/stats';
@@ -58,6 +58,7 @@ app.delete('/api/v1/pets/:id', authRequired, handleDeletePet);
 app.post('/api/v1/feeds', authRequired, handleCreateFeed);
 app.get('/api/v1/feeds', optionalAuth, handleGetFeeds);
 app.get('/api/v1/feeds/trending', handleGetTrending);
+app.get('/api/v1/feeds/random', handleGetRandomFeed);
 app.get('/api/v1/feeds/featured', handleGetFeatured);
 app.get('/api/v1/feeds/drafts', authRequired, handleGetDrafts);
 app.get('/api/v1/feeds/following', authRequired, handleGetFollowingFeed);
@@ -77,6 +78,8 @@ app.get('/api/v1/feeds/:id/likes', handleGetLikes);
 // Comments
 app.get('/api/v1/feeds/:id/comments', handleGetComments);
 app.post('/api/v1/feeds/:id/comments', authRequired, handleCreateComment);
+app.post('/api/v1/comments/:id/like', authRequired, handleLikeComment);
+app.delete('/api/v1/comments/:id/like', authRequired, handleUnlikeComment);
 
 // Bookmarks
 app.post('/api/v1/feeds/:id/bookmark', authRequired, handleBookmarkFeed);
