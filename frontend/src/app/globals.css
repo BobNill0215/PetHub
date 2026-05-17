@@ -4,7 +4,23 @@
 html { scroll-behavior: smooth; }
 
 body { @apply bg-gray-50 text-gray-900; }
-.dark body { @apply bg-gray-950 text-gray-100; }
+.dark {
+  --color-white: #1e2939;
+  --color-gray-50: #0f1729;
+  --color-gray-100: #1a2332;
+  --color-gray-200: #253040;
+  --color-gray-300: #354151;
+  --color-gray-400: #5a6a7a;
+  --color-gray-500: #7a8a9a;
+  --color-gray-600: #9aaaba;
+  --color-gray-700: #bacada;
+  --color-gray-800: #daeafa;
+  --color-gray-900: #f0f5ff;
+}
+.dark body {
+  background-color: #0a0f1a;
+  color: #f0f5ff;
+}
 
 /* Blue theme — blue-tinted backgrounds, deeper blue accents */
 .theme-blue {
