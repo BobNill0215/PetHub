@@ -18,7 +18,8 @@ export function LoginForm() {
     setError('');
     try {
       await login(email, password);
-      router.push('/');
+      // Force hard navigation to ensure state is fresh
+      window.location.href = '/';
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || '登录失败';
       setError(msg);
