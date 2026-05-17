@@ -5,6 +5,7 @@ import { config } from './config';
 import { errorHandler, notFoundHandler } from './middleware/error';
 import { authRequired, optionalAuth } from './middleware/auth';
 import { handleRegister, handleLogin, handleGetProfile, handleChangePassword } from './handler/auth';
+import { postRateLimit } from './middleware/ratelimit';
 import { handleCreatePet, handleGetUserPets, handleUpdatePet, handleDeletePet } from './handler/pet';
 import { handleCreateFeed, handleGetFeeds, handleGetFeedById, handleGetRelatedFeeds, handleGetRandomFeed, handleGetTrending, handleGetFeatured, handleGetDrafts, handleGetCategories, handleDeleteFeed, handleTogglePin, handleToggleFeatured, handleUpdateFeedImages } from './handler/feed';
 import { handleGetUserById, handleGetUserFeeds, handleUpdateProfile } from './handler/user';
@@ -12,8 +13,9 @@ import { handleLikeFeed, handleUnlikeFeed, handleGetLikes, handleGetComments, ha
 import { handleCreateProduct, handleGetProducts, handleGetProductById, handleGetMyProducts } from './handler/product';
 import { handleFollow, handleUnfollow, handleGetFollowers, handleGetFollowing, handleGetFollowingFeed } from './handler/follow';
 import { handleGetUserStats, handleGetPoints, handleGetNotifSettings, handleUpdateNotifSettings } from './handler/stats';
-import { handleAdminDashboard, handleAdminUsers, handleAdminBanUser, handleAdminReports, handleAdminResolveReport } from './handler/admin';
+import { handleAdminDashboard, handleAdminUsers, handleAdminBanUser, handleAdminReports, handleAdminResolveReport, handleAdminStats } from './handler/admin';
 import { handleGetTopics } from './handler/topics';
+import { handleSitemap } from './handler/meta';
 import { handleGetDailyTasks } from './handler/tasks';
 import { handleExportMyData } from './handler/export';
 import { handleBlockUser, handleUnblockUser, handleGetBlockedUsers } from './handler/block';
@@ -33,6 +35,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.get('/sitemap.xml', handleSitemap);
 
 app.get('/api/v1/health', (_req, res) => {
   res.json({ code: 0, message: 'ok', data: { service: 'pethub', version: '0.1.0' } });
@@ -56,7 +60,7 @@ app.put('/api/v1/pets/:id', authRequired, handleUpdatePet);
 app.delete('/api/v1/pets/:id', authRequired, handleDeletePet);
 
 // Feeds
-app.post('/api/v1/feeds', authRequired, handleCreateFeed);
+app.post('/api/v1/feeds', authRequired, postRateLimit, handleCreateFeed);
 app.get('/api/v1/feeds', optionalAuth, handleGetFeeds);
 app.get('/api/v1/feeds/trending', handleGetTrending);
 app.get('/api/v1/feeds/random', handleGetRandomFeed);
@@ -147,6 +151,7 @@ app.get('/api/v1/reports', authRequired, handleGetReports);
 
 // Admin
 app.get('/api/v1/admin/dashboard', handleAdminDashboard);
+app.get('/api/v1/admin/stats', handleAdminStats);
 app.get('/api/v1/admin/users', handleAdminUsers);
 app.post('/api/v1/admin/users/:id/ban', handleAdminBanUser);
 app.get('/api/v1/admin/reports', handleAdminReports);

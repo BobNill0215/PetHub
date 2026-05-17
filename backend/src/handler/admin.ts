@@ -2,6 +2,26 @@ import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { success, fail } from '../pkg/response';
 
+export async function handleAdminStats(req: Request, res: Response) {
+  try {
+    const days = parseInt(String(req.query.days)) || 7;
+    const since = new Date(); since.setDate(since.getDate() - days);
+
+    const [totalUsers, newUsers, totalFeeds, newFeeds, totalComments, newComments] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { createdAt: { gte: since } } }),
+      prisma.feed.count({ where: { isDraft: false } }),
+      prisma.feed.count({ where: { isDraft: false, createdAt: { gte: since } } }),
+      prisma.feedComment.count(),
+      prisma.feedComment.count({ where: { createdAt: { gte: since } } }),
+    ]);
+
+    const catStats = await prisma.feed.groupBy({ by: ['category'], where: { isDraft: false }, _count: true });
+
+    return success(res, { totalUsers, newUsers, totalFeeds, newFeeds, totalComments, newComments, cats: catStats.map(c => ({ category: c.category, count: c._count })) });
+  } catch { return fail(res, '获取统计失败'); }
+}
+
 export async function handleAdminDashboard(_req: Request, res: Response) {
   try {
     const [userCount, feedCount, reportCount, commentCount] = await Promise.all([
